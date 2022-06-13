@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html ⚡ lang="de" prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+<head>
+    <meta charset="utf-8">
+
+    <!-- external resources -->
+    <link rel="preload" as="script" href="https://cdn.ampproject.org/v0.js">
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    
+    <script async custom-element="amp-timeago" src="https://cdn.ampproject.org/v0/amp-timeago-0.1.js"></script>
+    <script async custom-element="amp-iframe" src="https://cdn.ampproject.org/v0/amp-iframe-0.1.js"></script>
+    
+
+    <!-- fonts -->
+    <link rel="preconnect dns-prefetch" href="https://fonts.gstatic.com/" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Josefin+Slab:600|Roboto:300">
+
+    <title>Formular-Finisher zum TYPO3 Backend-Editor hinzufügen</title>
+
+    <!-- references -->
+    <link rel="canonical" href="https://www.marco.zone/typo3-formular-finisher-zum-editor-hinzufuegen">
+    <link rel="alternate" type="application/rss+xml" title="Marco Zone" href="/feed.xml">
+
+    <!-- favicon/browser configuration -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#cd5c5c">
+    <meta name="apple-mobile-web-app-title" content="Marco Zone">
+    <meta name="application-name" content="Marco Zone">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- normal meta information -->
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"WebSite","name":"Marco Zone","alternateName":"Die Marco Zone","url":"https://www.marco.zone/","sameAs":"https://twitter.com/TheTrueNemo"}</script>
+    <meta name="description" content="Der umständliche und undokumentierte Weg eigene Finisher in den neuen TYPO3 8.7 Formular-Editor hinzuzufügen.   ">
+    <meta name="author" content="Marco Pfeiffer">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <meta name="date" content="Sat, 05 Aug 2017 22:00:00 +0200">
+    <meta name="keywords" content="TYPO3, Software-Development">
+    
+
+    <!-- open graph -->
+    <meta property="og:title" content="Formular-Finisher zum TYPO3 Backend-Editor hinzufügen">
+    <meta property="og:description" content="Der umständliche und undokumentierte Weg eigene Finisher in den neuen TYPO3 8.7 Formular-Editor hinzuzufügen.   ">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.marco.zone/typo3-formular-finisher-zum-editor-hinzufuegen">
+    <meta property="og:locale" content="de">
+    <meta property="og:site_name" content="Marco Zone">
+    
+    
+    <meta property="article:published_time" content="2017-08-05T22:00:00+02:00">
+    <meta property="article:modified_time" content="2018-10-15T17:25:00+02:00">
+    
+    <meta property="article:tag" content="TYPO3">
+    <meta property="article:tag" content="Software-Development">
+    
+
+    <!-- twitter card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@TheTrueNemo" />
+    <meta name="twitter:creator" content="@TheTrueNemo" />
+
+    <!-- styles -->
+    
+    <style amp-custom>body{margin:0;background-color:white;font-family:"Roboto", Helvetica, Arial, sans-serif;font-weight:300;line-height:1.5;color:#333;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}@media (prefers-color-scheme: dark){body{background:#221f1d;color:white}}strong,b{font-family:Arial, Helvetica, sans-serif;font-weight:700}pre,code{font-family:"Courier New", monospace;font-size:.9rem;line-height:1.2;letter-spacing:-0.02em}h1,h2,h3,.headline{font-family:"Josefin Slab", "Times New Roman", serif;font-weight:400;line-height:1.1;color:indianred;padding-top:2rem;padding-top:calc(4.1rem - 1.05em);margin:0;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}.counter-headline{padding-bottom:2rem}h1+h2,h2+h3{margin-top:1rem}h1{font-size:2rem}h2{font-size:1.8rem}h3{font-size:1.5rem}a{color:indianred;text-decoration:none;-webkit-tap-highlight-color:rgba(205,92,92,0.2)}p>a:hover,p>a:focus,li>a:hover,li>a:focus{text-decoration:underline}a:hover{color:orangered}:focus{outline:none;box-shadow:0 0 1px 1px orangered, 0 0 1px orangered inset}::selection{background:rgba(255,69,0,0.2);color:black}::-moz-selection{background:rgba(255,69,0,0.2);color:black}@media screen{.permalink{position:relative;vertical-align:baseline;display:inline-block;width:14px;height:15px;border:.5rem solid transparent;margin:-.5rem 0 -.5rem -.5rem;transition:opacity .2s, transform .2s;opacity:0;transform:translateX(-10%)}h1:hover>.permalink,h2:hover>.permalink,h3:hover>.permalink{opacity:1;transform:translateX(0)}.permalink::before,.permalink::after{content:"";position:absolute;width:5px;height:5px;border:2px solid currentColor;border-radius:50%}.permalink::before{left:5px;bottom:0}.permalink::after{left:0;bottom:6px}}aside,p{margin-top:.5rem;margin-bottom:0}article,aside,footer,header,nav,section,main{display:block}pre{margin:0}.lead{font-family:"Josefin Slab", "Times New Roman", serif;font-size:1.7rem;line-height:2.1rem;margin-top:.3666666667rem;text-align:left;letter-spacing:-.05em}html,body{scroll-behavior:smooth}@media screen and (min-width: 49.75rem) and (min-height: 30rem){body{padding-left:14rem}}amp-img,img{max-width:100%;height:auto}figure>h2,figure>h3{margin-top:1rem}@media screen{div.highlighter-rouge,figure,blockquote{clear:both;padding:1rem;border-color:whitesmoke;border-style:solid;border-width:1px 0;margin:1rem 0;overflow-x:auto}div.highlighter-rouge+div.highlighter-rouge,div.highlighter-rouge+figure,div.highlighter-rouge+blockquote,figure+div.highlighter-rouge,figure+figure,figure+blockquote,blockquote+div.highlighter-rouge,blockquote+figure,blockquote+blockquote{margin-top:-1rem;border-top-width:0}div.highlighter-rouge::-webkit-scrollbar,figure::-webkit-scrollbar,blockquote::-webkit-scrollbar{height:.5rem;margin:-.5rem}div.highlighter-rouge::-webkit-scrollbar-thumb,figure::-webkit-scrollbar-thumb,blockquote::-webkit-scrollbar-thumb{background-color:whitesmoke}}@media screen and (prefers-color-scheme: dark){div.highlighter-rouge,figure,blockquote{border-color:#333333}div.highlighter-rouge::-webkit-scrollbar-thumb,figure::-webkit-scrollbar-thumb,blockquote::-webkit-scrollbar-thumb{background-color:#333333}}@media screen{.page-content>p,.page-content>.fake-paragraph,.page-content>ul,.page-content>ol,.page-content>h1,.page-content>h2,.page-content>h3,.page-content>amp-img,.page-content>noscript>img{box-sizing:border-box;max-width:33.75rem;margin-left:1rem;margin-right:1rem}}@media screen and (max-width: 33.75rem){.page-content>figure>[sizes*="(max-width:33.75rem)100vw"]{display:block;margin:-1rem;max-width:none}}@media screen and (device-pixel-ratio: 2) and (min-width: 35.75rem), screen and (-webkit-device-pixel-ratio: 2) and (min-width: 35.75rem), screen and (min-resolution: 288dpi){.page-content>figure>amp-img[srcset]:not([srcset*="1080w"])>img{image-rendering:-webkit-crisp-edges;image-rendering:-moz-crisp-edges;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor}}blockquote>p{box-sizing:border-box;max-width:32.75rem;margin-left:1rem;margin-right:1rem}blockquote cite{display:block;font-size:0.8em}.tldr-wrapper{max-width:35.75rem;padding-left:1rem;padding-right:1rem}@media print, screen and (min-width: 35.75rem){.tldr-left{width:18rem;clear:left;float:left;margin-right:1rem}.tldr-right{width:18rem;clear:right;float:right;margin-left:1rem}p{text-align:justify}}.highlighter-rouge .c,.highlighter-rouge .c1,.highlighter-rouge .c2,.highlighter-rouge .sd{color:darkgray}.highlighter-rouge .s,.highlighter-rouge .s1,.highlighter-rouge .s2,.highlighter-rouge .k,.highlighter-rouge .nv{color:indianred}.language-yaml .s,.language-yaml .s1,.language-yaml .s2,.language-yaml .nv,.language-yaml .nv{color:inherit}.language-yaml .na{color:indianred}.highlighter-rouge .k+.nv{color:inherit}.highlighter-rouge .gd{background-color:rgba(205,92,92,0.2)}.highlighter-rouge .gi{background-color:rgba(144,238,144,0.2)}.page-header{margin:0 auto}.page-header__logo{display:inline-block;padding:1rem;margin:0;font-size:1.5rem}@media screen and (min-width: 49.75rem) and (min-height: 30rem){.page-header{position:fixed;left:0;top:0;width:14rem;height:100%;padding:1rem 0;box-sizing:border-box;backface-visibility:hidden}.page-header__logo{display:block;float:right;padding:1rem;font-size:2rem}}@media print{.page-header{display:none}}.page-footer{min-height:3rem;margin-top:3rem;padding:1rem 1rem;max-width:33.75rem;font-size:.8em}.page-footer__copyright{display:block;float:left}.page-footer__copyright>span{display:inline-block}.page-footer__nav{display:block;float:right;list-style:none;margin:0;padding:0}.page-footer__nav>li{display:inline-block;margin:0;padding:0}amp-timeago{text-align:left;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}.post__image{position:absolute;left:0;top:0;width:100vw;z-index:-1;opacity:0.1;-webkit-mask:linear-gradient(to bottom, #000 75vw, transparent);mask:linear-gradient(to bottom, #000 75vw, transparent)}@media (min-width: 35.75rem){.post__head{display:flex;align-items:center}.post__image{position:relative;width:10rem;opacity:1;flex-shrink:0;margin:0 0 0 1rem;order:1}.post__image-text{flex-grow:1}}.post__subheadline{color:indianred;margin-top:.1em}.post_lead{clear:both}.post__content>amp-img,.post__content>noscript>img{margin-top:1em;margin-bottom:1em}.post__comments{margin-top:4rem;margin-bottom:4rem;max-width:35.75rem}.author__meta{display:table;margin-top:1rem;margin-bottom:1rem}.author__image,.author__body{display:table-cell;vertical-align:middle}.author__image{width:160px}main aside{margin-top:4rem}.author__image{width:80px;float:left;padding-right:.5rem}.author__image>amp-img,.author__image>noscript>img{border-radius:50%}.author__name{margin:0;padding:0}@media print{.post__comments{display:none}}</style>
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+
+</head>
+<body>
+
+<header id="page-header" class="page-header">
+    <a class="page-header__logo headline" href="/">Marco Zone:</a>
+</header>
+
+<main class="post" vocab="http://schema.org/" typeof="BlogPosting" resource="https://www.marco.zone/typo3-formular-finisher-zum-editor-hinzufuegen">
+    <meta property="mainEntityOfPage" content="https://www.marco.zone/typo3-formular-finisher-zum-editor-hinzufuegen">
+
+    <div class="page-content">
+        <header class="fake-paragraph post__head">
+            
+            <div class="post__image-text">
+                <h1 class="post__headline" property="headline">
+                    Formular-Finisher zum TYPO3 Backend-Editor hinzufügen&nbsp;<a href="#" class="permalink" title="permalink"></a>
+                </h1>
+
+                <p class="post__subheadline counter-headline">
+                    published
+                    <amp-timeago datetime="2017-08-05T22:00:00+02:00" property="datePublished" cutoff="15768000" width="15em" height="1.5em">
+                        05 August 2017
+                    </amp-timeago>
+                    <br>
+                    last modified
+                    <amp-timeago datetime="2018-10-15T17:25:00+02:00" property="dateModified" cutoff="15768000" width="15em" height="1.5em">
+                        at 15 October 2018
+                    </amp-timeago>
+                </p>
+            </div>
+        </header>
+
+        <p class="post__lead" property="description">
+            Der umständliche und undokumentierte Weg eigene Finisher in den neuen TYPO3 8.7 Formular-Editor hinzuzufügen.
+        </p>
+    </div>
+
+    
+    
+    
+
+    <div class="page-content post__content" property="articleBody">
+        <p>Es gibt viele Gründe weshalb man einen weiteren Finisher brauchen würde. Mein Grund war eine Cleverreach integration. Leider ist die TYPO3 Api etwas unnötig kompliziert gestalltet.  Ein einfaches <code class="highlighter-rouge">ValidatorInterface</code> kombiniert mit einer ext_localconf.php methode <code class="highlighter-rouge">FormUtility::addValidator</code> war wohl zu einfach.</p>
+
+<p>Das Ergebnis im TYPO3-Backend soll dann am Ende ungefähr so aussehen:</p>
+
+<figure>
+    <amp-img srcset="/assets/resized/160/cleverreach-typo3-form.png 160w, /assets/cleverreach-typo3-form.png 273w" width="273" height="420" alt="Ansicht vom TYPO3 Backend" layout="responsive" sizes="(max-width:19.0625rem)calc(100vw-2rem),17.0625rem"></amp-img><noscript><img src="/assets/cleverreach-typo3-form.png" alt="Ansicht vom TYPO3 Backend" property="" /></noscript>
+</figure>
+
+<h2 id="die-finisher-klasse">Die Finisher Klasse&nbsp;<a href="#die-finisher-klasse" class="permalink" title="permalink"></a></h2>
+
+<p>Als erstes würde ich den Finisher anlegen. Wenn man sich die mitgelieferten Finisher als Beispiel nimmt, gehören unsere in <code class="highlighter-rouge">Classes\Model\Finishers</code>. Wenn du ein relativ gutes Beispiel suchst, wie ein funktionierender Finisher aussieht, würde ich mich an den <code class="highlighter-rouge">EmailFinisher</code> und den <code class="highlighter-rouge">RedirectFinisher</code> halten.</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">namespace</span> <span class="nn">Vendor\VendorExtension\Domain\Finishers</span><span class="p">;</span>
+
+<span class="kn">use</span> <span class="nn">TYPO3\CMS\Form\Domain\Finishers\AbstractFinisher</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nc">CleverreachSubscribeFinisher</span> <span class="k">extends</span> <span class="nx">AbstractFinisher</span>
+<span class="p">{</span>
+    <span class="cd">/**
+     * Dies sind die Optionen die wir später haben wollen.
+     * 
+     * @var array
+     */</span>
+    <span class="k">protected</span> <span class="nv">$defaultOptions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">'apiKey'</span> <span class="o">=&gt;</span> <span class="s1">''</span><span class="p">,</span>
+        <span class="s1">'email'</span> <span class="o">=&gt;</span> <span class="s1">''</span>
+    <span class="p">];</span>
+
+    <span class="cd">/**
+     * Hier kommt unsere schöne Logik hin.
+     */</span>
+    <span class="k">protected</span> <span class="k">function</span> <span class="nf">executeInternal</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// liefert alle formular werte</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">finisherContext</span><span class="o">-&gt;</span><span class="na">getFormValues</span><span class="p">();</span>
+        <span class="c1">// holt die Option apikey, die wir später definieren</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">parseOption</span><span class="p">(</span><span class="s1">'apiKey'</span><span class="p">);</span>
+        
+        <span class="c1">// die exakte implementierung zeige ich hier nicht</span>
+        <span class="c1">// die wird ehh je nach anforderung unterschiedlich sein </span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="form-framework-konfiguration">Form Framework Konfiguration&nbsp;<a href="#form-framework-konfiguration" class="permalink" title="permalink"></a></h2>
+
+<p>Wir brauchen 3 Yaml Dateien um den Finisher zu registrieren. Die Form Extension packt diese in <code class="highlighter-rouge">Configuration/Yaml</code>. Ich persöhnlich würde den Ordner allerdings <code class="highlighter-rouge">Form</code> nennen um ein wenig klarheit zu schaffen für was die Configuration ist.</p>
+
+<p>Ich zeig hier einfach beispielhaft yaml Datein. Ich definiere hier nur 2 Felder um die Dateien kurz zu halten, es ist so schon lang genug.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># BaseSetup.yaml</span>
+<span class="na">TYPO3</span><span class="pi">:</span>
+  <span class="na">CMS</span><span class="pi">:</span>
+    <span class="na">Form</span><span class="pi">:</span>
+      <span class="na">prototypes</span><span class="pi">:</span>
+        <span class="na">standard</span><span class="pi">:</span>
+          <span class="na">finishersDefinition</span><span class="pi">:</span>
+            <span class="na">CleverreachSubscribe</span><span class="pi">:</span>
+              <span class="na">implementationClassName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Vendor\VendorExtension\Domain\Finishers\CleverreachSubscribeFinisher'</span>
+</code></pre></div></div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># FormEditorSetup.yaml</span>
+<span class="na">TYPO3</span><span class="pi">:</span>
+  <span class="na">CMS</span><span class="pi">:</span>
+    <span class="na">Form</span><span class="pi">:</span>
+      <span class="na">prototypes</span><span class="pi">:</span>
+        <span class="na">standard</span><span class="pi">:</span>
+          <span class="na">formElementsDefinition</span><span class="pi">:</span>
+            <span class="na">Form</span><span class="pi">:</span>
+              <span class="na">formEditor</span><span class="pi">:</span>
+                <span class="na">editors</span><span class="pi">:</span>
+                  <span class="na">900</span><span class="pi">:</span>
+                    <span class="c1"># Diese Definition erweitert das Dropdown der Finisher im menü</span>
+                    <span class="na">selectOptions</span><span class="pi">:</span>
+                      <span class="na">35</span><span class="pi">:</span>
+                        <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">CleverreachSubscribe'</span>
+                        <span class="na">label</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Cleverreach</span><span class="nv"> </span><span class="s">Subscribe'</span>
+                <span class="na">propertyCollections</span><span class="pi">:</span>
+                  <span class="na">finishers</span><span class="pi">:</span>
+                    <span class="c1"># Hier wird definiert, welche Felder der Finisher später haben soll</span>
+                    <span class="na">25</span><span class="pi">:</span>
+                      <span class="na">identifier</span><span class="pi">:</span> <span class="s1">'</span><span class="s">CleverreachSubscribe'</span>
+                      <span class="na">editors</span><span class="pi">:</span>
+                        <span class="na">__inheritances</span><span class="pi">:</span>
+                          <span class="na">10</span><span class="pi">:</span> <span class="s1">'</span><span class="s">TYPO3.CMS.Form.mixins.formElementMixins.BaseCollectionEditorsMixin'</span>
+                        <span class="na">100</span><span class="pi">:</span>
+                          <span class="na">label</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Cleverreach</span><span class="nv"> </span><span class="s">Subscribe"</span>
+                        <span class="c1"># Das ist die Definition für die darstellung von apiKey im Backend</span>
+                        <span class="na">110</span><span class="pi">:</span>
+                          <span class="na">identifier</span><span class="pi">:</span> <span class="s1">'</span><span class="s">apiKey'</span>
+                          <span class="na">templateName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Inspector-TextEditor'</span>
+                          <span class="na">label</span><span class="pi">:</span> <span class="s1">'</span><span class="s">apiKey'</span>
+                          <span class="na">propertyPath</span><span class="pi">:</span> <span class="s1">'</span><span class="s">options.apiKey'</span>
+                          <span class="na">propertyValidators</span><span class="pi">:</span>
+                            <span class="na">10</span><span class="pi">:</span> <span class="s1">'</span><span class="s">NotEmpty'</span>
+                        <span class="c1"># Und das hier ist die definition für das email feld.</span>
+                        <span class="c1"># Es hat die Besonderheit, dass ein Feld aus dem Formular ausgewählt werden kann</span>
+                        <span class="c1"># Es wird dann sowas wie {input-1} gespeichert.</span>
+                        <span class="c1"># -&gt;parseOption('email') im Finisher löst die Referenz dann auf</span>
+                        <span class="c1"># und gibt den Wert von input-1 zurück.</span>
+                        <span class="na">140</span><span class="pi">:</span>
+                          <span class="na">identifier</span><span class="pi">:</span> <span class="s1">'</span><span class="s">email'</span>
+                          <span class="na">templateName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Inspector-TextEditor'</span>
+                          <span class="na">label</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Subscribers</span><span class="nv"> </span><span class="s">email'</span>
+                          <span class="na">propertyPath</span><span class="pi">:</span> <span class="s1">'</span><span class="s">options.email'</span>
+                          <span class="na">enableFormelementSelectionButton</span><span class="pi">:</span> <span class="no">true</span>
+                          <span class="na">propertyValidators</span><span class="pi">:</span>
+                            <span class="na">10</span><span class="pi">:</span> <span class="s1">'</span><span class="s">NotEmpty'</span>
+                            <span class="na">20</span><span class="pi">:</span> <span class="s1">'</span><span class="s">FormElementIdentifierWithinCurlyBracesInclusive'</span>
+                            
+          <span class="c1"># Hier ist definiert welche optionen das javascript im backend beim hinzufügen lädt.</span>
+          <span class="c1"># Am besten sollten es die selben sein wie in finisher. </span>
+          <span class="na">finishersDefinition</span><span class="pi">:</span>
+            <span class="na">CleverreachSubscribe</span><span class="pi">:</span>
+              <span class="na">formEditor</span><span class="pi">:</span>
+                <span class="na">iconIdentifier</span><span class="pi">:</span> <span class="s1">'</span><span class="s">t3-form-icon-finisher'</span>
+                <span class="na">label</span><span class="pi">:</span> <span class="s1">'</span><span class="s">A</span><span class="nv"> </span><span class="s">Label</span><span class="nv"> </span><span class="s">that</span><span class="nv"> </span><span class="s">seems</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">be</span><span class="nv"> </span><span class="s">never</span><span class="nv"> </span><span class="s">used...'</span>
+                <span class="na">predefinedDefaults</span><span class="pi">:</span>
+                  <span class="na">options</span><span class="pi">:</span>
+                    <span class="na">apiKey</span><span class="pi">:</span> <span class="s1">'</span><span class="s">'</span>
+                    <span class="na">email</span><span class="pi">:</span> <span class="s1">'</span><span class="s">'</span>
+</code></pre></div></div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># FormEngineSetup.yaml</span>
+<span class="na">TYPO3</span><span class="pi">:</span>
+  <span class="na">CMS</span><span class="pi">:</span>
+    <span class="na">Form</span><span class="pi">:</span>
+      <span class="na">prototypes</span><span class="pi">:</span>
+        <span class="na">standard</span><span class="pi">:</span>
+          <span class="na">finishersDefinition</span><span class="pi">:</span>
+            <span class="na">CleverreachSubscribe</span><span class="pi">:</span>
+              <span class="na">FormEngine</span><span class="pi">:</span>
+                <span class="na">label</span><span class="pi">:</span> <span class="s2">"</span><span class="s">When</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">label</span><span class="nv"> </span><span class="s">used?</span><span class="nv"> </span><span class="s">And</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">what?"</span>
+                <span class="na">elements</span><span class="pi">:</span>
+                  <span class="c1"># hier nochmal alle Felder</span>
+                  <span class="c1"># ich habe keine Ahnung wofür diese sind aber ohne geht es nicht</span>
+                  <span class="c1"># spontan würde ich behaupten das es tca configuration ist</span>
+                  <span class="c1"># aber ich definiere keine Datenbank Felder ~ vielleicht ist das aber eine Option</span>
+                  <span class="na">apiKey</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">label</span><span class="pi">:</span> <span class="nv">apiKey</span><span class="pi">,</span> <span class="nv">config</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">type</span><span class="pi">:</span> <span class="nv">input</span><span class="pi">}}</span>
+                  <span class="na">email</span><span class="pi">:</span>  <span class="pi">{</span><span class="nv">label</span><span class="pi">:</span> <span class="nv">email</span> <span class="pi">,</span> <span class="nv">config</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">type</span><span class="pi">:</span> <span class="nv">input</span><span class="pi">}}</span>
+</code></pre></div></div>
+
+<p>Und das war so ziemlich der nervigste Teil. Jetzt müssen wir nur noch unsere yaml Dateien registrieren. Dafür brauchen wir wieder gutes altes TypoScript. Ich empfehle es in die <code class="highlighter-rouge">ext_typoscript_setup.txt</code> zu schreiben da diese Konfiguration nicht vom Seitenbaum abhängig ist.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># frontend configuration
+plugin.tx_form.settings.yamlConfigurations {
+    1499086547 = EXT:extension/Configuration/Form/BaseSetup.yaml
+    1499088215 = EXT:extension/Configuration/Form/FormEngineSetup.yaml
+}
+# backend configuration
+module.tx_form.settings.yamlConfigurations {
+    1499086547 = EXT:extension/Configuration/Form/BaseSetup.yaml
+    1499086867 = EXT:extension/Configuration/Form/FormEditorSetup.yaml
+    1499088215 = EXT:extension/Configuration/Form/FormEngineSetup.yaml
+}
+</code></pre></div></div>
+
+<h2 id="zusammenfassung">Zusammenfassung&nbsp;<a href="#zusammenfassung" class="permalink" title="permalink"></a></h2>
+
+<p>Im Endeffekt ist es nicht sehr kompliziert wenn man weiß was man tun muss. Das nervigste ist, dass alles mehrfach definiert werden muss. Das hinzufügen einer Option muss an 4 Stellen über 3 Dateien eingetragen werden. Auch die pfade zu den Werten lassen sich nicht sonderlich gut merken. Ich vermute einfach, das nie daran gedacht wurde das jemand diese Api nutzt. Das würde auch das Fehlen der Dokumentation erklären ~ bei TYPO3 ist man sich da nie sicher.</p>
+
+    </div>
+
+    <aside class="page-content">
+        <div hidden typeof="Organization" property="publisher">
+            <meta property="name" content="Marco Zone">
+            <div property="logo" typeof="ImageObject">
+                <meta property="url" content="https://www.marco.zone/assets/marco-zone-text.png">
+                <meta property="width" content="378">
+                <meta property="height" content="60">
+            </div>
+        </div>
+
+        <figure class="post__similar">
+            
+            
+            
+            <h2>Similar "TYPO3" posts</h2>
+            <ul>
+                
+                <li><a href="/typo3-und-webpack">Webpack in TYPO3 integrieren</a></li>
+                
+                <li><a href="/typo3-cookie-warnung">TYPO3 Cookie-Hinweis</a></li>
+                
+                <li><a href="/typo3-canonical-url">TYPO3 Canonical-Url</a></li>
+                
+                <li><a href="/typo3-css-js-spam-verhindern">TYPO3 Css/Js-Spam verhindern</a></li>
+                
+                <li><a href="/typo3-erweiterungs-wunschliste">TYPO3 Erweiterungs Wunschliste</a></li>
+                
+            </ul>
+            
+            
+            
+            
+            <h2>Similar "Software-Development" posts</h2>
+            <ul>
+                
+                <li><a href="/doctrine-event-guide">Guide to doctrine orm events</a></li>
+                
+                <li><a href="/shared-aurora-serverless-using-cloudformation">Share an Aurora Serveless between services using CloudFormation</a></li>
+                
+                <li><a href="/official-docker-php-apache-https">Configure https for the official docker php apache images</a></li>
+                
+                <li><a href="/configure-symfony-for-serverless-lambda">Configure symfony for a serverless lambda environment in bref</a></li>
+                
+                <li><a href="/docker-uses-over-100-percent-cpu">Docker for mac uses over 100% cpu while doing nothing</a></li>
+                
+            </ul>
+            
+            
+        </figure>
+
+        
+        <figure class="post__author" id="author">
+            <h2>Author:</h2>
+            <div class="author" property="author" typeof="Person">
+                <div class="author__meta">
+                    <div class="author__image">
+                        <amp-img srcset="/assets/person/marco-desaturate.jpg 160w" width="160" height="160" layout="responsive" sizes="5rem"></amp-img><noscript><img src="/assets/person/marco-desaturate.jpg" alt="" property="image" ></noscript>
+                    </div>
+                    <div class="author__body">
+                        <h3 class="author__name" property="name">Marco Pfeiffer</h3>
+                        <div><a href="https://twitter.com/TheTrueNemo">@TheTrueNemo</a></div>
+                        <div><a href="https://github.com/Nemo64">github.com/Nemo64</a></div>
+                        <div>working for <a href="https://www.hauptsache.net/">hauptsache.net</a></div>
+                    </div>
+                </div>
+            </div>
+        </figure>
+    </aside>
+
+</main>
+
+
+
+<footer id="page-footer" class="page-footer">
+    <div class="page-footer__copyright">
+        <span>© 2016 – 2022</span>
+        <span>Marco Pfeiffer</span>
+    </div>
+    <ul class="page-footer__nav">
+        
+        <li><a href="/datenschutzerklaerung" rel="nofollow">Datenschutzerklärung</a></li>
+        <li><a href="/impressum" rel="nofollow">Impressum</a></li>
+        
+    </ul>
+</footer>
+
+</body>
+</html>

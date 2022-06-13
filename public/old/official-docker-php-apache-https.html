@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html ⚡ lang="en" prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+<head>
+    <meta charset="utf-8">
+
+    <!-- external resources -->
+    <link rel="preload" as="script" href="https://cdn.ampproject.org/v0.js">
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    
+    <script async custom-element="amp-timeago" src="https://cdn.ampproject.org/v0/amp-timeago-0.1.js"></script>
+    <script async custom-element="amp-iframe" src="https://cdn.ampproject.org/v0/amp-iframe-0.1.js"></script>
+    
+
+    <!-- fonts -->
+    <link rel="preconnect dns-prefetch" href="https://fonts.gstatic.com/" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Josefin+Slab:600|Roboto:300">
+
+    <title>Configure https for the official docker php apache images</title>
+
+    <!-- references -->
+    <link rel="canonical" href="https://www.marco.zone/official-docker-php-apache-https">
+    <link rel="alternate" type="application/rss+xml" title="Marco Zone" href="/feed.xml">
+
+    <!-- favicon/browser configuration -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#cd5c5c">
+    <meta name="apple-mobile-web-app-title" content="Marco Zone">
+    <meta name="application-name" content="Marco Zone">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- normal meta information -->
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"WebSite","name":"Marco Zone","alternateName":"Die Marco Zone","url":"https://www.marco.zone/","sameAs":"https://twitter.com/TheTrueNemo"}</script>
+    <meta name="description" content="Here is what to do to get quick and dirty https working.">
+    <meta name="author" content="Marco Pfeiffer">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <meta name="date" content="Mon, 25 May 2020 10:50:00 +0200">
+    <meta name="keywords" content="Software-Development">
+    
+
+    <!-- open graph -->
+    <meta property="og:title" content="Configure https for the official docker php apache images">
+    <meta property="og:description" content="Here is what to do to get quick and dirty https working.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.marco.zone/official-docker-php-apache-https">
+    <meta property="og:locale" content="en">
+    <meta property="og:site_name" content="Marco Zone">
+    
+    <meta property="og:image" content="https://www.marco.zone/assets/docker-moby-logo.png">
+    
+    
+    <meta property="article:published_time" content="2020-05-25T10:50:00+02:00">
+    <meta property="article:modified_time" content="2020-05-25T10:50:00+02:00">
+    
+    <meta property="article:tag" content="Software-Development">
+    
+
+    <!-- twitter card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@TheTrueNemo" />
+    <meta name="twitter:creator" content="@TheTrueNemo" />
+
+    <!-- styles -->
+    
+    <style amp-custom>body{margin:0;background-color:white;font-family:"Roboto", Helvetica, Arial, sans-serif;font-weight:300;line-height:1.5;color:#333;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}@media (prefers-color-scheme: dark){body{background:#221f1d;color:white}}strong,b{font-family:Arial, Helvetica, sans-serif;font-weight:700}pre,code{font-family:"Courier New", monospace;font-size:.9rem;line-height:1.2;letter-spacing:-0.02em}h1,h2,h3,.headline{font-family:"Josefin Slab", "Times New Roman", serif;font-weight:400;line-height:1.1;color:indianred;padding-top:2rem;padding-top:calc(4.1rem - 1.05em);margin:0;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}.counter-headline{padding-bottom:2rem}h1+h2,h2+h3{margin-top:1rem}h1{font-size:2rem}h2{font-size:1.8rem}h3{font-size:1.5rem}a{color:indianred;text-decoration:none;-webkit-tap-highlight-color:rgba(205,92,92,0.2)}p>a:hover,p>a:focus,li>a:hover,li>a:focus{text-decoration:underline}a:hover{color:orangered}:focus{outline:none;box-shadow:0 0 1px 1px orangered, 0 0 1px orangered inset}::selection{background:rgba(255,69,0,0.2);color:black}::-moz-selection{background:rgba(255,69,0,0.2);color:black}@media screen{.permalink{position:relative;vertical-align:baseline;display:inline-block;width:14px;height:15px;border:.5rem solid transparent;margin:-.5rem 0 -.5rem -.5rem;transition:opacity .2s, transform .2s;opacity:0;transform:translateX(-10%)}h1:hover>.permalink,h2:hover>.permalink,h3:hover>.permalink{opacity:1;transform:translateX(0)}.permalink::before,.permalink::after{content:"";position:absolute;width:5px;height:5px;border:2px solid currentColor;border-radius:50%}.permalink::before{left:5px;bottom:0}.permalink::after{left:0;bottom:6px}}aside,p{margin-top:.5rem;margin-bottom:0}article,aside,footer,header,nav,section,main{display:block}pre{margin:0}.lead{font-family:"Josefin Slab", "Times New Roman", serif;font-size:1.7rem;line-height:2.1rem;margin-top:.3666666667rem;text-align:left;letter-spacing:-.05em}html,body{scroll-behavior:smooth}@media screen and (min-width: 49.75rem) and (min-height: 30rem){body{padding-left:14rem}}amp-img,img{max-width:100%;height:auto}figure>h2,figure>h3{margin-top:1rem}@media screen{div.highlighter-rouge,figure,blockquote{clear:both;padding:1rem;border-color:whitesmoke;border-style:solid;border-width:1px 0;margin:1rem 0;overflow-x:auto}div.highlighter-rouge+div.highlighter-rouge,div.highlighter-rouge+figure,div.highlighter-rouge+blockquote,figure+div.highlighter-rouge,figure+figure,figure+blockquote,blockquote+div.highlighter-rouge,blockquote+figure,blockquote+blockquote{margin-top:-1rem;border-top-width:0}div.highlighter-rouge::-webkit-scrollbar,figure::-webkit-scrollbar,blockquote::-webkit-scrollbar{height:.5rem;margin:-.5rem}div.highlighter-rouge::-webkit-scrollbar-thumb,figure::-webkit-scrollbar-thumb,blockquote::-webkit-scrollbar-thumb{background-color:whitesmoke}}@media screen and (prefers-color-scheme: dark){div.highlighter-rouge,figure,blockquote{border-color:#333333}div.highlighter-rouge::-webkit-scrollbar-thumb,figure::-webkit-scrollbar-thumb,blockquote::-webkit-scrollbar-thumb{background-color:#333333}}@media screen{.page-content>p,.page-content>.fake-paragraph,.page-content>ul,.page-content>ol,.page-content>h1,.page-content>h2,.page-content>h3,.page-content>amp-img,.page-content>noscript>img{box-sizing:border-box;max-width:33.75rem;margin-left:1rem;margin-right:1rem}}@media screen and (max-width: 33.75rem){.page-content>figure>[sizes*="(max-width:33.75rem)100vw"]{display:block;margin:-1rem;max-width:none}}@media screen and (device-pixel-ratio: 2) and (min-width: 35.75rem), screen and (-webkit-device-pixel-ratio: 2) and (min-width: 35.75rem), screen and (min-resolution: 288dpi){.page-content>figure>amp-img[srcset]:not([srcset*="1080w"])>img{image-rendering:-webkit-crisp-edges;image-rendering:-moz-crisp-edges;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor}}blockquote>p{box-sizing:border-box;max-width:32.75rem;margin-left:1rem;margin-right:1rem}blockquote cite{display:block;font-size:0.8em}.tldr-wrapper{max-width:35.75rem;padding-left:1rem;padding-right:1rem}@media print, screen and (min-width: 35.75rem){.tldr-left{width:18rem;clear:left;float:left;margin-right:1rem}.tldr-right{width:18rem;clear:right;float:right;margin-left:1rem}p{text-align:justify}}.highlighter-rouge .c,.highlighter-rouge .c1,.highlighter-rouge .c2,.highlighter-rouge .sd{color:darkgray}.highlighter-rouge .s,.highlighter-rouge .s1,.highlighter-rouge .s2,.highlighter-rouge .k,.highlighter-rouge .nv{color:indianred}.language-yaml .s,.language-yaml .s1,.language-yaml .s2,.language-yaml .nv,.language-yaml .nv{color:inherit}.language-yaml .na{color:indianred}.highlighter-rouge .k+.nv{color:inherit}.highlighter-rouge .gd{background-color:rgba(205,92,92,0.2)}.highlighter-rouge .gi{background-color:rgba(144,238,144,0.2)}.page-header{margin:0 auto}.page-header__logo{display:inline-block;padding:1rem;margin:0;font-size:1.5rem}@media screen and (min-width: 49.75rem) and (min-height: 30rem){.page-header{position:fixed;left:0;top:0;width:14rem;height:100%;padding:1rem 0;box-sizing:border-box;backface-visibility:hidden}.page-header__logo{display:block;float:right;padding:1rem;font-size:2rem}}@media print{.page-header{display:none}}.page-footer{min-height:3rem;margin-top:3rem;padding:1rem 1rem;max-width:33.75rem;font-size:.8em}.page-footer__copyright{display:block;float:left}.page-footer__copyright>span{display:inline-block}.page-footer__nav{display:block;float:right;list-style:none;margin:0;padding:0}.page-footer__nav>li{display:inline-block;margin:0;padding:0}amp-timeago{text-align:left;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}.post__image{position:absolute;left:0;top:0;width:100vw;z-index:-1;opacity:0.1;-webkit-mask:linear-gradient(to bottom, #000 75vw, transparent);mask:linear-gradient(to bottom, #000 75vw, transparent)}@media (min-width: 35.75rem){.post__head{display:flex;align-items:center}.post__image{position:relative;width:10rem;opacity:1;flex-shrink:0;margin:0 0 0 1rem;order:1}.post__image-text{flex-grow:1}}.post__subheadline{color:indianred;margin-top:.1em}.post_lead{clear:both}.post__content>amp-img,.post__content>noscript>img{margin-top:1em;margin-bottom:1em}.post__comments{margin-top:4rem;margin-bottom:4rem;max-width:35.75rem}.author__meta{display:table;margin-top:1rem;margin-bottom:1rem}.author__image,.author__body{display:table-cell;vertical-align:middle}.author__image{width:160px}main aside{margin-top:4rem}.author__image{width:80px;float:left;padding-right:.5rem}.author__image>amp-img,.author__image>noscript>img{border-radius:50%}.author__name{margin:0;padding:0}@media print{.post__comments{display:none}}</style>
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+
+</head>
+<body>
+
+<header id="page-header" class="page-header">
+    <a class="page-header__logo headline" href="/">Marco Zone:</a>
+</header>
+
+<main class="post" vocab="http://schema.org/" typeof="BlogPosting" resource="https://www.marco.zone/official-docker-php-apache-https">
+    <meta property="mainEntityOfPage" content="https://www.marco.zone/official-docker-php-apache-https">
+
+    <div class="page-content">
+        <header class="fake-paragraph post__head">
+            
+                <amp-img srcset="/assets/resized/160/docker-moby-logo.png 160w, /assets/resized/320/docker-moby-logo.png 320w, /assets/resized/540/docker-moby-logo.png 540w," width="601" height="431" alt="Docker Moby logo" title="source: https://www.docker.com/company/newsroom/media-resources" class="post__image" layout="responsive" sizes="(min-width: 35.75rem) 10rem, 100vw"></amp-img><noscript><img src="/assets/resized/540/docker-moby-logo.png" alt="Docker Moby logo" title="source: https://www.docker.com/company/newsroom/media-resources" property="image" class="post__image"></noscript>
+            
+            <div class="post__image-text">
+                <h1 class="post__headline" property="headline">
+                    Configure https for the official docker php apache images&nbsp;<a href="#" class="permalink" title="permalink"></a>
+                </h1>
+
+                <p class="post__subheadline counter-headline">
+                    published
+                    <amp-timeago datetime="2020-05-25T10:50:00+02:00" property="datePublished" cutoff="15768000" width="15em" height="1.5em">
+                        25 May 2020
+                    </amp-timeago>
+                    <meta property="dateModified" content="2020-05-25T10:50:00+02:00">
+                </p>
+            </div>
+        </header>
+
+        <p class="post__lead" property="description">
+            Here is what to do to get quick and dirty https working.
+        </p>
+    </div>
+
+    
+    
+    
+
+    <div class="page-content post__content" property="articleBody">
+        <p>A few days ago I finally needed to configure https in my local dev environment.
+I somehow always got around it and I always heard I should test with https
+but somehow never did. Since I now needed it I searched for the quickest way.</p>
+
+<p>You need a <code class="highlighter-rouge">Dockerfile</code> to modify the official php apache image.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FROM php:7.4-apache
+
+<span class="c"># install the ssl-cert package which will create a "snakeoil" keypair</span>
+RUN apt-get update <span class="se">\</span>
+ <span class="o">&&</span> <span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive apt-get <span class="nb">install</span> <span class="nt">-y</span> ssl-cert <span class="se">\</span>
+ <span class="o">&&</span> <span class="nb">rm</span> <span class="nt">-r</span> /var/lib/apt/lists/<span class="k">*</span>
+
+<span class="c"># enable ssl module and enable the default-ssl site</span>
+RUN a2enmod ssl <span class="se">\</span>
+ <span class="o">&&</span> a2ensite default-ssl
+</code></pre></div></div>
+
+<p>And that’s about it. You now just need to map port 443 to your host.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">php</span><span class="pi">:</span>
+    <span class="na">build</span><span class="pi">:</span>
+      <span class="na">context</span><span class="pi">:</span> <span class="s">.</span>
+      <span class="na">dockerfile</span><span class="pi">:</span> <span class="s">Dockerfile</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="c1"># I map this to 443 on my host so I don't need to specify it</span>
+      <span class="pi">-</span> <span class="s">443:443</span>
+</code></pre></div></div>
+
+<div class="tldr-wrapper"><p class="lead tldr-right">Do not push that docker image to any repository!</p></div>
+
+<p>The nice thing about this solution is that it creates a certificate for everyone who is building the docker image.
+If you put that Dockerfile into your project than everyone will have it’s own unique ssl certificate.
+Because of this, <em>you must not push that docker image</em> or else you’ll leak your personal certificate.</p>
+
+<p>More extensive guides will probably contain how you can trust that certificate
+so you can avoid the browser warning but i’ll ignore that for simplicity.</p>
+
+<p>Another thing I want to mention are the <a href="https://hub.docker.com/r/chialab/php">chialab variants of the official docker images</a>.
+They contain a lot of common pre installed extensions so you don’t need to figure out how to install them or wait for long build.</p>
+
+    </div>
+
+    <aside class="page-content">
+        <div hidden typeof="Organization" property="publisher">
+            <meta property="name" content="Marco Zone">
+            <div property="logo" typeof="ImageObject">
+                <meta property="url" content="https://www.marco.zone/assets/marco-zone-text.png">
+                <meta property="width" content="378">
+                <meta property="height" content="60">
+            </div>
+        </div>
+
+        <figure class="post__similar">
+            
+            
+            
+            <h2>Similar "Software-Development" posts</h2>
+            <ul>
+                
+                <li><a href="/doctrine-event-guide">Guide to doctrine orm events</a></li>
+                
+                <li><a href="/shared-aurora-serverless-using-cloudformation">Share an Aurora Serveless between services using CloudFormation</a></li>
+                
+                <li><a href="/configure-symfony-for-serverless-lambda">Configure symfony for a serverless lambda environment in bref</a></li>
+                
+                <li><a href="/docker-uses-over-100-percent-cpu">Docker for mac uses over 100% cpu while doing nothing</a></li>
+                
+                <li><a href="/typo3-und-webpack">Webpack in TYPO3 integrieren</a></li>
+                
+            </ul>
+            
+            
+        </figure>
+
+        
+        <figure class="post__author" id="author">
+            <h2>Author:</h2>
+            <div class="author" property="author" typeof="Person">
+                <div class="author__meta">
+                    <div class="author__image">
+                        <amp-img srcset="/assets/person/marco-desaturate.jpg 160w" width="160" height="160" layout="responsive" sizes="5rem"></amp-img><noscript><img src="/assets/person/marco-desaturate.jpg" alt="" property="image" ></noscript>
+                    </div>
+                    <div class="author__body">
+                        <h3 class="author__name" property="name">Marco Pfeiffer</h3>
+                        <div><a href="https://twitter.com/TheTrueNemo">@TheTrueNemo</a></div>
+                        <div><a href="https://github.com/Nemo64">github.com/Nemo64</a></div>
+                        <div>working for <a href="https://www.hauptsache.net/">hauptsache.net</a></div>
+                    </div>
+                </div>
+            </div>
+        </figure>
+    </aside>
+
+</main>
+
+
+
+<footer id="page-footer" class="page-footer">
+    <div class="page-footer__copyright">
+        <span>© 2016 – 2022</span>
+        <span>Marco Pfeiffer</span>
+    </div>
+    <ul class="page-footer__nav">
+        
+        <li><a href="/datenschutzerklaerung" rel="nofollow">Datenschutzerklärung</a></li>
+        <li><a href="/impressum" rel="nofollow">Impressum</a></li>
+        
+    </ul>
+</footer>
+
+</body>
+</html>

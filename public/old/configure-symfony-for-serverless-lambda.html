@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html ⚡ lang="en" prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+<head>
+    <meta charset="utf-8">
+
+    <!-- external resources -->
+    <link rel="preload" as="script" href="https://cdn.ampproject.org/v0.js">
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    
+    <script async custom-element="amp-timeago" src="https://cdn.ampproject.org/v0/amp-timeago-0.1.js"></script>
+    <script async custom-element="amp-iframe" src="https://cdn.ampproject.org/v0/amp-iframe-0.1.js"></script>
+    
+
+    <!-- fonts -->
+    <link rel="preconnect dns-prefetch" href="https://fonts.gstatic.com/" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Josefin+Slab:600|Roboto:300">
+
+    <title>Configure symfony for a serverless lambda environment in bref</title>
+
+    <!-- references -->
+    <link rel="canonical" href="https://www.marco.zone/configure-symfony-for-serverless-lambda">
+    <link rel="alternate" type="application/rss+xml" title="Marco Zone" href="/feed.xml">
+
+    <!-- favicon/browser configuration -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#cd5c5c">
+    <meta name="apple-mobile-web-app-title" content="Marco Zone">
+    <meta name="application-name" content="Marco Zone">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- normal meta information -->
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"WebSite","name":"Marco Zone","alternateName":"Die Marco Zone","url":"https://www.marco.zone/","sameAs":"https://twitter.com/TheTrueNemo"}</script>
+    <meta name="description" content="A guide on how to configure everything in the full multipage symfony skeleton to run on aws lambda, with code snippets, to get you started.">
+    <meta name="author" content="Marco Pfeiffer">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <meta name="date" content="Sun, 10 May 2020 20:00:00 +0200">
+    <meta name="keywords" content="AWS, serverless, Software-Development">
+    
+
+    <!-- open graph -->
+    <meta property="og:title" content="Configure symfony for a serverless lambda environment in bref">
+    <meta property="og:description" content="A guide on how to configure everything in the full multipage symfony skeleton to run on aws lambda, with code snippets, to get you started.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.marco.zone/configure-symfony-for-serverless-lambda">
+    <meta property="og:locale" content="en">
+    <meta property="og:site_name" content="Marco Zone">
+    
+    <meta property="og:image" content="https://www.marco.zone/assets/aws-lambda.png">
+    
+    
+    <meta property="article:published_time" content="2020-05-10T20:00:00+02:00">
+    <meta property="article:modified_time" content="2020-08-14T21:18:00+02:00">
+    
+    <meta property="article:tag" content="AWS">
+    <meta property="article:tag" content="serverless">
+    <meta property="article:tag" content="Software-Development">
+    
+
+    <!-- twitter card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@TheTrueNemo" />
+    <meta name="twitter:creator" content="@TheTrueNemo" />
+
+    <!-- styles -->
+    
+    <style amp-custom>body{margin:0;background-color:white;font-family:"Roboto", Helvetica, Arial, sans-serif;font-weight:300;line-height:1.5;color:#333;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}@media (prefers-color-scheme: dark){body{background:#221f1d;color:white}}strong,b{font-family:Arial, Helvetica, sans-serif;font-weight:700}pre,code{font-family:"Courier New", monospace;font-size:.9rem;line-height:1.2;letter-spacing:-0.02em}h1,h2,h3,.headline{font-family:"Josefin Slab", "Times New Roman", serif;font-weight:400;line-height:1.1;color:indianred;padding-top:2rem;padding-top:calc(4.1rem - 1.05em);margin:0;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}.counter-headline{padding-bottom:2rem}h1+h2,h2+h3{margin-top:1rem}h1{font-size:2rem}h2{font-size:1.8rem}h3{font-size:1.5rem}a{color:indianred;text-decoration:none;-webkit-tap-highlight-color:rgba(205,92,92,0.2)}p>a:hover,p>a:focus,li>a:hover,li>a:focus{text-decoration:underline}a:hover{color:orangered}:focus{outline:none;box-shadow:0 0 1px 1px orangered, 0 0 1px orangered inset}::selection{background:rgba(255,69,0,0.2);color:black}::-moz-selection{background:rgba(255,69,0,0.2);color:black}@media screen{.permalink{position:relative;vertical-align:baseline;display:inline-block;width:14px;height:15px;border:.5rem solid transparent;margin:-.5rem 0 -.5rem -.5rem;transition:opacity .2s, transform .2s;opacity:0;transform:translateX(-10%)}h1:hover>.permalink,h2:hover>.permalink,h3:hover>.permalink{opacity:1;transform:translateX(0)}.permalink::before,.permalink::after{content:"";position:absolute;width:5px;height:5px;border:2px solid currentColor;border-radius:50%}.permalink::before{left:5px;bottom:0}.permalink::after{left:0;bottom:6px}}aside,p{margin-top:.5rem;margin-bottom:0}article,aside,footer,header,nav,section,main{display:block}pre{margin:0}.lead{font-family:"Josefin Slab", "Times New Roman", serif;font-size:1.7rem;line-height:2.1rem;margin-top:.3666666667rem;text-align:left;letter-spacing:-.05em}html,body{scroll-behavior:smooth}@media screen and (min-width: 49.75rem) and (min-height: 30rem){body{padding-left:14rem}}amp-img,img{max-width:100%;height:auto}figure>h2,figure>h3{margin-top:1rem}@media screen{div.highlighter-rouge,figure,blockquote{clear:both;padding:1rem;border-color:whitesmoke;border-style:solid;border-width:1px 0;margin:1rem 0;overflow-x:auto}div.highlighter-rouge+div.highlighter-rouge,div.highlighter-rouge+figure,div.highlighter-rouge+blockquote,figure+div.highlighter-rouge,figure+figure,figure+blockquote,blockquote+div.highlighter-rouge,blockquote+figure,blockquote+blockquote{margin-top:-1rem;border-top-width:0}div.highlighter-rouge::-webkit-scrollbar,figure::-webkit-scrollbar,blockquote::-webkit-scrollbar{height:.5rem;margin:-.5rem}div.highlighter-rouge::-webkit-scrollbar-thumb,figure::-webkit-scrollbar-thumb,blockquote::-webkit-scrollbar-thumb{background-color:whitesmoke}}@media screen and (prefers-color-scheme: dark){div.highlighter-rouge,figure,blockquote{border-color:#333333}div.highlighter-rouge::-webkit-scrollbar-thumb,figure::-webkit-scrollbar-thumb,blockquote::-webkit-scrollbar-thumb{background-color:#333333}}@media screen{.page-content>p,.page-content>.fake-paragraph,.page-content>ul,.page-content>ol,.page-content>h1,.page-content>h2,.page-content>h3,.page-content>amp-img,.page-content>noscript>img{box-sizing:border-box;max-width:33.75rem;margin-left:1rem;margin-right:1rem}}@media screen and (max-width: 33.75rem){.page-content>figure>[sizes*="(max-width:33.75rem)100vw"]{display:block;margin:-1rem;max-width:none}}@media screen and (device-pixel-ratio: 2) and (min-width: 35.75rem), screen and (-webkit-device-pixel-ratio: 2) and (min-width: 35.75rem), screen and (min-resolution: 288dpi){.page-content>figure>amp-img[srcset]:not([srcset*="1080w"])>img{image-rendering:-webkit-crisp-edges;image-rendering:-moz-crisp-edges;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor}}blockquote>p{box-sizing:border-box;max-width:32.75rem;margin-left:1rem;margin-right:1rem}blockquote cite{display:block;font-size:0.8em}.tldr-wrapper{max-width:35.75rem;padding-left:1rem;padding-right:1rem}@media print, screen and (min-width: 35.75rem){.tldr-left{width:18rem;clear:left;float:left;margin-right:1rem}.tldr-right{width:18rem;clear:right;float:right;margin-left:1rem}p{text-align:justify}}.highlighter-rouge .c,.highlighter-rouge .c1,.highlighter-rouge .c2,.highlighter-rouge .sd{color:darkgray}.highlighter-rouge .s,.highlighter-rouge .s1,.highlighter-rouge .s2,.highlighter-rouge .k,.highlighter-rouge .nv{color:indianred}.language-yaml .s,.language-yaml .s1,.language-yaml .s2,.language-yaml .nv,.language-yaml .nv{color:inherit}.language-yaml .na{color:indianred}.highlighter-rouge .k+.nv{color:inherit}.highlighter-rouge .gd{background-color:rgba(205,92,92,0.2)}.highlighter-rouge .gi{background-color:rgba(144,238,144,0.2)}.page-header{margin:0 auto}.page-header__logo{display:inline-block;padding:1rem;margin:0;font-size:1.5rem}@media screen and (min-width: 49.75rem) and (min-height: 30rem){.page-header{position:fixed;left:0;top:0;width:14rem;height:100%;padding:1rem 0;box-sizing:border-box;backface-visibility:hidden}.page-header__logo{display:block;float:right;padding:1rem;font-size:2rem}}@media print{.page-header{display:none}}.page-footer{min-height:3rem;margin-top:3rem;padding:1rem 1rem;max-width:33.75rem;font-size:.8em}.page-footer__copyright{display:block;float:left}.page-footer__copyright>span{display:inline-block}.page-footer__nav{display:block;float:right;list-style:none;margin:0;padding:0}.page-footer__nav>li{display:inline-block;margin:0;padding:0}amp-timeago{text-align:left;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}.post__image{position:absolute;left:0;top:0;width:100vw;z-index:-1;opacity:0.1;-webkit-mask:linear-gradient(to bottom, #000 75vw, transparent);mask:linear-gradient(to bottom, #000 75vw, transparent)}@media (min-width: 35.75rem){.post__head{display:flex;align-items:center}.post__image{position:relative;width:10rem;opacity:1;flex-shrink:0;margin:0 0 0 1rem;order:1}.post__image-text{flex-grow:1}}.post__subheadline{color:indianred;margin-top:.1em}.post_lead{clear:both}.post__content>amp-img,.post__content>noscript>img{margin-top:1em;margin-bottom:1em}.post__comments{margin-top:4rem;margin-bottom:4rem;max-width:35.75rem}.author__meta{display:table;margin-top:1rem;margin-bottom:1rem}.author__image,.author__body{display:table-cell;vertical-align:middle}.author__image{width:160px}main aside{margin-top:4rem}.author__image{width:80px;float:left;padding-right:.5rem}.author__image>amp-img,.author__image>noscript>img{border-radius:50%}.author__name{margin:0;padding:0}@media print{.post__comments{display:none}}</style>
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+
+</head>
+<body>
+
+<header id="page-header" class="page-header">
+    <a class="page-header__logo headline" href="/">Marco Zone:</a>
+</header>
+
+<main class="post" vocab="http://schema.org/" typeof="BlogPosting" resource="https://www.marco.zone/configure-symfony-for-serverless-lambda">
+    <meta property="mainEntityOfPage" content="https://www.marco.zone/configure-symfony-for-serverless-lambda">
+
+    <div class="page-content">
+        <header class="fake-paragraph post__head">
+            
+                <amp-img srcset="/assets/resized/160/aws-lambda.png 160w, /assets/aws-lambda.png 300w" width="300" height="300" alt="AWS Lambda logo" title="source: https://aws.amazon.com/de/architecture/icons/" class="post__image" layout="responsive" sizes="(min-width: 35.75rem) 10rem, 100vw"></amp-img><noscript><img src="/assets/aws-lambda.png" alt="AWS Lambda logo" title="source: https://aws.amazon.com/de/architecture/icons/" property="image" class="post__image"></noscript>
+            
+            <div class="post__image-text">
+                <h1 class="post__headline" property="headline">
+                    Configure symfony for a serverless lambda environment in bref&nbsp;<a href="#" class="permalink" title="permalink"></a>
+                </h1>
+
+                <p class="post__subheadline counter-headline">
+                    published
+                    <amp-timeago datetime="2020-05-10T20:00:00+02:00" property="datePublished" cutoff="15768000" width="15em" height="1.5em">
+                        10 May 2020
+                    </amp-timeago>
+                    <br>
+                    last modified
+                    <amp-timeago datetime="2020-08-14T21:18:00+02:00" property="dateModified" cutoff="15768000" width="15em" height="1.5em">
+                        at 14 August 2020
+                    </amp-timeago>
+                </p>
+            </div>
+        </header>
+
+        <p class="post__lead" property="description">
+            A guide on how to configure everything in the full multipage symfony skeleton to run on aws lambda, with code snippets, to get you started.
+        </p>
+    </div>
+
+    
+    
+    
+    <nav class="page-content post__index">
+        <h2>Table of contents</h2>
+        
+        <ul>
+        
+            
+            
+            
+            
+            <li><a href="#what-do-i-want">What do I want</a></li>
+        
+            
+            <ul>
+            
+            
+            <li><a href="#disclaimer">Disclaimer</a></li>
+        
+            
+            
+            </ul>
+            
+            <li><a href="#configure-serverless">Configure serverless</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#creating-the-lambda-environment">Creating the “lambda” environment</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#configure-caching">Configure caching</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#configure-logging">Configure logging</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#configure-assets-and-distribution">Configure assets (and distribution)</a></li>
+        
+            
+            <ul>
+            
+            
+            <li><a href="#configure-a-custom-domain">Configure a custom domain</a></li>
+        
+            
+            
+            </ul>
+            
+            <li><a href="#configure-sessions-and-the-aws-sdk">Configure sessions (and the aws-sdk)</a></li>
+        
+            
+            <ul>
+            
+            
+            <li><a href="#install-the-async-aws-sdk">install the async-aws-sdk</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#actually-configuring-the-session-handler">actually configuring the session handler</a></li>
+        
+            
+            
+            </ul>
+            
+            <li><a href="#configure-mailing">Configure mailing</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#configure-doctrine">Configure doctrine</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#working-example">Working example</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#final-words">Final words</a></li>
+        
+        </ul>
+    </nav>
+    
+
+    <div class="page-content post__content" property="articleBody">
+        <p>I’m going to assume a few things:</p>
+
+<ul>
+  <li>You have already played around with <a href="https://bref.sh/">bref</a>.
+If not, go to the excellent <a href="https://bref.sh/docs/">bref documentation</a> and start with a simple php example.</li>
+  <li>You use the full symfony/skeleton. The minimal version is similar but not everything here is needed.</li>
+  <li>You use Symfony 5.1. Previous versions don’t support directly all aws services directly. Specifically mail.</li>
+  <li>You know and are using <code class="highlighter-rouge">serverless</code>. This is the obvious choice if you followed the <a href="https://bref.sh/docs/">bref documentation</a>.</li>
+  <li>You are hosting or at least testing the AWS region <code class="highlighter-rouge">us-east-1</code>, <code class="highlighter-rouge">us-east-2</code>, <code class="highlighter-rouge">us-west-2</code> or <code class="highlighter-rouge">eu-west-1</code>.
+Other regions will have limitations in this guide since not all services are available everywhere.
+I’ll mention if a service is strangely limited but if you stick to the regions above, you won’t have any problems.
+I personally stick to <code class="highlighter-rouge">eu-west-1</code>.</li>
+</ul>
+
+<h2 id="what-do-i-want">What do I want&nbsp;<a href="#what-do-i-want" class="permalink" title="permalink"></a></h2>
+
+<ul>
+  <li>I want a symfony installation that can run using bref in aws lambda.</li>
+  <li>I want to develop and test my application locally and even be able to host the application in a classic environment if necessary.</li>
+  <li>I want my changes to be obvious. I don’t want to modify to many files in the symfony skeleton
+as it would make it difficult to understand for anyone going into the project.
+(this is also why I write this documentation)</li>
+</ul>
+
+<h3 id="disclaimer">Disclaimer&nbsp;<a href="#disclaimer" class="permalink" title="permalink"></a></h3>
+
+<p>I’m writing this guide from memory and by copy&pasting from a working project, so I have probably forgotten some things.
+If I notice that I missed something I’ll add it later.
+I’ll also try to update it when things get easier.</p>
+
+<h2 id="configure-serverless">Configure serverless&nbsp;<a href="#configure-serverless" class="permalink" title="permalink"></a></h2>
+
+<p>Serverless is the deployment tool I’m going to use.
+Configuring it is fairly simple but if you have already played <a href="https://bref.sh/">bref</a>, you should be aware of how it works.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>composer require bref/bref
+</code></pre></div></div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless.yaml</span>
+<span class="na">service</span><span class="pi">:</span> <span class="s">symfony-project</span>
+
+<span class="na">plugins</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">./vendor/bref/bref</span>
+
+<span class="na">provider</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">aws</span>
+  <span class="na">region</span><span class="pi">:</span> <span class="s">eu-west-1</span>
+
+  <span class="c1"># Use the username as the default stage</span>
+  <span class="c1"># This way, multiple developers don't get in the way of each other.</span>
+  <span class="na">stage</span><span class="pi">:</span> <span class="s">${opt:stage, env:USER}</span>
+
+  <span class="na">runtime</span><span class="pi">:</span> <span class="s">provided</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="na">APP_ENV</span><span class="pi">:</span> <span class="s">prod</span>
+    <span class="na">APP_SECRET</span><span class="pi">:</span> <span class="kt">!Join</span> <span class="pi">[</span><span class="s1">'</span><span class="s">'</span><span class="pi">,</span> <span class="pi">[</span><span class="s1">'</span><span class="s">{{resolve:secretsmanager:'</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">AppSecret</span><span class="pi">,</span> <span class="s1">'</span><span class="s">:SecretString:secret}}'</span><span class="pi">]]</span>
+
+<span class="na">package</span><span class="pi">:</span>
+  <span class="na">excludeDevDependencies</span><span class="pi">:</span> <span class="no">false</span> <span class="c1"># only excludes node dev dependencies which we exclude entirely 2 lines below</span>
+  <span class="na">exclude</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">node_modules/**'</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">tests/**'</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">.env*.local*'</span>
+    <span class="c1"># further excludes in the separate sections</span>
+
+<span class="na">functions</span><span class="pi">:</span>
+  <span class="na">website</span><span class="pi">:</span>
+    <span class="na">handler</span><span class="pi">:</span> <span class="s">public/index.php</span>
+    <span class="na">timeout</span><span class="pi">:</span> <span class="m">28</span> <span class="c1"># seconds, which is the http api maximum</span>
+    <span class="na">layers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">${bref:layer.php-74-fpm}</span>
+    <span class="na">events</span><span class="pi">:</span>
+      <span class="c1"># use the http api instead of the rest api ~ this shouldn't make a difference for you as you probably aren't using advanced features</span>
+      <span class="c1"># the http api is a lot cheaper than the rest api though and is supposed to be faster</span>
+      <span class="pi">-</span> <span class="na">httpApi</span><span class="pi">:</span> <span class="s1">'</span><span class="s">*'</span>
+  <span class="na">console</span><span class="pi">:</span>
+    <span class="na">handler</span><span class="pi">:</span> <span class="s">bin/console</span>
+    <span class="na">timeout</span><span class="pi">:</span> <span class="m">120</span> <span class="c1"># seconds</span>
+    <span class="na">layers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">${bref:layer.php-74}</span>
+      <span class="pi">-</span> <span class="s">${bref:layer.console}</span> <span class="c1"># The "console" layer</span>
+
+<span class="na">resources</span><span class="pi">:</span>
+  <span class="na">Resources</span><span class="pi">:</span>
+    <span class="c1"># The symfony secret used eg. for csrf protection</span>
+    <span class="na">AppSecret</span><span class="pi">:</span>
+      <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::SecretsManager::Secret</span> <span class="c1"># https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secret.html</span>
+      <span class="na">Properties</span><span class="pi">:</span>
+        <span class="na">Name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">/${self:service}/${opt:stage,</span><span class="nv"> </span><span class="s">self:provider.stage}/app_secret'</span>
+        <span class="na">GenerateSecretString</span><span class="pi">:</span>
+          <span class="na">SecretStringTemplate</span><span class="pi">:</span> <span class="s1">'</span><span class="s">{}'</span>
+          <span class="na">GenerateStringKey</span><span class="pi">:</span> <span class="s2">"</span><span class="s">secret"</span>
+          <span class="na">PasswordLength</span><span class="pi">:</span> <span class="m">32</span>
+</code></pre></div></div>
+
+<p>This should already somewhat work if you warm the cache but depending on what you log or write in the cache,
+it can also silently fail. If that is the case: don’t worry, the next 3 sections will probably solve that issue.</p>
+
+<h2 id="creating-the-lambda-environment">Creating the “lambda” environment&nbsp;<a href="#creating-the-lambda-environment" class="permalink" title="permalink"></a></h2>
+
+<p>The Symfony skeleton comes with 3 environments. <code class="highlighter-rouge">dev</code>, <code class="highlighter-rouge">test</code> and <code class="highlighter-rouge">prod</code>.
+However, while those are the defaults, nobody is forcing you to stick with those.</p>
+
+<p>Because running in lambda is very different from running locally, I like to configure a “lambda” environment.</p>
+
+<p>You can read the symfony documentation on how to <a href="https://symfony.com/doc/4.1/configuration/environments.html#creating-a-new-environment">create an environment</a>
+but you basically create a folder in <code class="highlighter-rouge">config/packages/[environment name]</code>
+or in our case <code class="highlighter-rouge">config/packages/lambda</code> and you’ll be able to use <code class="highlighter-rouge">app/console --env=lambda</code>.</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code> your-project/
+ ├─ config/
+ ├─ ├─ packages/
+ ├─ ├─ ├─ dev/
+<span class="gi">+├─ ├─ ├─ lambda/ # your new environment
+</span> └─ └─ └─ prod/
+</code></pre></div></div>
+
+<p>To start: you can copy all files from <code class="highlighter-rouge">prod/</code> to <code class="highlighter-rouge">lambda/</code> but we’ll modify them.</p>
+
+<p>Doing this has some advantages:</p>
+
+<ul>
+  <li>I don’t need to touch the normal <code class="highlighter-rouge">prod</code> configuration and can therefore still use it outside lambda</li>
+  <li>My lambda modifications are obvious and mostly limited to this folder</li>
+</ul>
+
+<p>Now every environment (except prod) will be <code class="highlighter-rouge">debug=true</code> by default.
+That isn’t that big of a deal, if you set the <code class="highlighter-rouge">APP_DEBUG</code> environment variable to <code class="highlighter-rouge">0</code>,
+but I want debug to default to false in the lambda environment.
+The most portable way to achieve this, is to create a <code class="highlighter-rouge">.env.lambda</code> in your project.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># .env.lambda
+APP_DEBUG=0
+</code></pre></div></div>
+
+<p>You now just need to configure your <code class="highlighter-rouge">serverless.yaml</code> to set the <code class="highlighter-rouge">APP_ENV</code> environment variable.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">provider</span><span class="pi">:</span>
+  <span class="c1"># [...]</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="na">APP_ENV</span><span class="pi">:</span> <span class="s">lambda</span>
+</code></pre></div></div>
+
+<h2 id="configure-caching">Configure caching&nbsp;<a href="#configure-caching" class="permalink" title="permalink"></a></h2>
+
+<p>One of the biggest differences of lambda compared to a classical hosting environments is that you can’t write to disk directly.</p>
+
+<p>If you followed the <a href="https://bref.sh/docs/frameworks/symfony.html">bref symfony documentation</a>, you modified your <code class="highlighter-rouge">Kernel.php</code> as an easy solution… revert that.
+We are going to configure it more granular to get better performance through deploying cache.</p>
+
+<p>Symfony will actually run on a read-only filesystem (if you warm and deploy the cache)
+but not all caches are warmed completely and silently fail to write during runtime.</p>
+
+<p>Luckily, all caches, that aren’t fully warmed, are classical key value cache pools which are configurable.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># config/packages/lambda/cache.yaml</span>
+<span class="na">framework</span><span class="pi">:</span>
+    <span class="na">cache</span><span class="pi">:</span>
+        <span class="c1"># write all caches into the filesystem</span>
+        <span class="na">system</span><span class="pi">:</span> <span class="s">cache.adapter.filesystem</span> <span class="c1"># instead of cache.adapter.system</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">cache.adapter.filesystem</span> <span class="c1"># this is the default but i like to be explicit here</span>
+
+        <span class="c1"># in lambda, /tmp is writable although limited to the this lambda instance </span>
+        <span class="na">directory</span><span class="pi">:</span> <span class="s1">'</span><span class="s">/tmp/pools'</span>
+</code></pre></div></div>
+
+<p>This will make all symfony cache pools write into <code class="highlighter-rouge">/tmp/pools</code> instead of <code class="highlighter-rouge">var/cache/{environment}/pools</code>.
+Note that twig, translations and doctrine will still be in <code class="highlighter-rouge">var/cache/{environment}</code>
+but those caches aren’t generated at runtime but during <code class="highlighter-rouge">cache:clear</code> so that is great.</p>
+
+<p>You’ll need to be aware of a few things though:</p>
+
+<ul>
+  <li>The <code class="highlighter-rouge">/tmp</code> directory is limited to the <a href="https://docs.aws.amazon.com/lambda/latest/dg/runtimes-context.html">lambda execution context</a> so it isn’t shared between concurrent executions.</li>
+  <li>The <code class="highlighter-rouge">system</code> cache contains code related things like validator, serializer, annotation and property metadata caches.
+This cache must be cleared after deploying new code which will luckily happen automatically
+thanks to lambda destroying the execution context after a code update.</li>
+  <li>The <code class="highlighter-rouge">app</code> cache is for your application and only you know what is in there if you use it at all.
+It may be necessary to configure an external caching service for this if you need it to be consistent across contexts.</li>
+  <li>On a <a href="https://dashbird.io/knowledge-base/aws-lambda/cold-starts/">cold start</a>, the cache will be empty.
+I <a href="https://github.com/brefphp/symfony-bridge/issues/21#issuecomment-612942058">experimented with deploying a warmed pools folder</a> and found that it is actually slower to copy the cache
+than to just start with the system cache cold but that is highly dependent on the application.</li>
+</ul>
+
+<p>Now if you deploy your application, you’ll need to warm the cache with <code class="highlighter-rouge">app/console cache:warmup -e lambda</code>
+and you’ll also need to make sure that you deploy the cache folder. I recommend the following <code class="highlighter-rouge">serverless.yaml</code> config.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless.yaml</span>
+<span class="na">provider</span><span class="pi">:</span>
+  <span class="c1"># [...]</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="na">APP_ENV</span><span class="pi">:</span> <span class="s">lambda</span>
+  
+<span class="na">package</span><span class="pi">:</span>
+  <span class="na">exclude</span><span class="pi">:</span>
+    <span class="c1"># [...]</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">var/**'</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">!var/cache/${self:provider.environment.APP_ENV}/**'</span>
+</code></pre></div></div>
+
+<p>If you don’t like this solution, because the cache will be cold,
+I have considered <a href="https://github.com/brefphp/symfony-bridge/issues/31#issuecomment-615917906">a lot of cache deploying solutions</a> and think this is the best compromise between easy and performance
+but your mileage may vary depending on your project so if you need to optimize, take a look and experiment.</p>
+
+<p>There is also <a href="https://github.com/symfony/symfony/issues/23354">an issue open in the symfony project</a> to solve the read-only cache problem but it is stalling a lot
+but if you are lucky, it may already be solved in the future so take a look there too.</p>
+
+<h2 id="configure-logging">Configure logging&nbsp;<a href="#configure-logging" class="permalink" title="permalink"></a></h2>
+
+<p>You can’t use log files so you’ll need an external service for this.</p>
+
+<p>The easiest solution is to just write all errors to <code class="highlighter-rouge">php://stderr</code> which lambda will automatically write into CloudWatch.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># config/packages/lambda/monolog.yaml</span>
+<span class="na">monolog</span><span class="pi">:</span>
+    <span class="na">handlers</span><span class="pi">:</span>
+        <span class="na">main</span><span class="pi">:</span>
+            <span class="na">type</span><span class="pi">:</span> <span class="s">stream</span>
+            <span class="na">path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">php://stderr"</span>
+            <span class="na">level</span><span class="pi">:</span> <span class="s">debug</span> <span class="c1"># info, notice, warning or error but I keep it at debug to start out</span>
+            <span class="na">formatter</span><span class="pi">:</span> <span class="s">app.monolog.formatter.cloudwatch</span>
+
+<span class="na">services</span><span class="pi">:</span>
+    <span class="c1"># default format but without date ~ cloudwatch adds that automatically</span>
+    <span class="s">app.monolog.formatter.cloudwatch</span><span class="pi">:</span>
+        <span class="na">class</span><span class="pi">:</span> <span class="s">Monolog\Formatter\LineFormatter</span>
+        <span class="na">arguments</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">%%channel%%.%%level_name%%:</span><span class="nv"> </span><span class="s">%%message%%</span><span class="nv"> </span><span class="s">%%context%%</span><span class="nv"> </span><span class="s">%%extra%%</span><span class="se">\n</span><span class="s">"</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<p>And you are done. To access your logs you can go through the aws console to your lambda function and just click on invocations.
+You can even use <code class="highlighter-rouge">serverless logs -f [function name]</code> to access them quickly.</p>
+
+<h2 id="configure-assets-and-distribution">Configure assets (and distribution)&nbsp;<a href="#configure-assets-and-distribution" class="permalink" title="permalink"></a></h2>
+
+<p>You don’t want to deliver assets though php so you’ll need somewhere to store them.
+S3 is the place to do that within the AWS ecosystem but you’ll need to split your code from your assets during deployment.</p>
+
+<p>I already wrote something on that topic: <a href="/asset-distribution-on-a-aws-serverless-multipage-application">asset distribution on a serverless multipage application</a> so go though that.</p>
+
+<h3 id="configure-a-custom-domain">Configure a custom domain&nbsp;<a href="#configure-a-custom-domain" class="permalink" title="permalink"></a></h3>
+
+<p>This isn’t optional and I’ll tell you why.</p>
+
+<p>Symfony, as many other frameworks, uses the <code class="highlighter-rouge">Host</code> header for some url generation.
+The problem is that CloudFront has to request your lambda using <code class="highlighter-rouge">Host: https://abc123abc1.execute-api.eu-west-1.amazonaws.com</code>
+or else the ApiGateway won’t know which configuration to use.
+There is a <code class="highlighter-rouge">X-Forwarded-Host</code> header for that reason but CloudFront does not support it natively so we’ll have to do some trickery.</p>
+
+<p>You should use a custom domain so you can work around the limitation that Cloudfront can’t pass the HOST header as <code class="highlighter-rouge">X-Forwarded-Host</code>.
+I show you how I configured it but please go though <a href="/asset-distribution-on-a-aws-serverless-multipage-application">asset distribution on a serverless multipage application</a> first.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">custom</span><span class="pi">:</span>
+  <span class="c1"># these are some settings that I keep here that change based on environment</span>
+  <span class="c1"># consider everything under environment a config file</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="c1"># you need to register a certificate within aws.</span>
+    <span class="c1"># Use a wildcard domain with *.example.com and example.com to easily deploy multiple environments. </span>
+    <span class="c1"># https://bref.sh/docs/websites.html#setting-up-a-domain-name</span>
+    <span class="na">domain</span><span class="pi">:</span>
+      <span class="na">current</span><span class="pi">:</span> <span class="s">${self:custom.environment.domain.${opt:stage, self:provider.stage}, self:custom.environment.domain.default}</span>
+      <span class="na">default</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">${opt:stage,</span><span class="nv"> </span><span class="s">self:provider.stage}.example.com'</span>
+        <span class="na">certificate</span><span class="pi">:</span> <span class="s1">'</span><span class="s">arn:aws:acm:us-east-1:012345678901:certificate/61d153aa-92d7-11ea-bb37-0242ac130002'</span>
+        <span class="na">cdnPriceClass</span><span class="pi">:</span> 
+      <span class="na">production</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">example.com'</span>
+        <span class="na">certificate</span><span class="pi">:</span> <span class="s1">'</span><span class="s">arn:aws:acm:us-east-1:012345678901:certificate/61d153aa-92d7-11ea-bb37-0242ac130002'</span>
+
+<span class="na">package</span><span class="pi">:</span>
+  <span class="na">exclude</span><span class="pi">:</span>
+    <span class="c1"># the function does not need the frontend asset resources except for the manifest for mapping reasons</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">node_modules/**'</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">public/**'</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">!public/build/manifest.json'</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">!public/index.php'</span>
+    <span class="c1"># [...]</span>
+
+<span class="na">provider</span><span class="pi">:</span>
+  <span class="c1"># [...]</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="c1"># the application will run behind CloudFront so we'll need to trust any incoming ip</span>
+    <span class="na">TRUSTED_PROXIES</span><span class="pi">:</span> <span class="s1">'</span><span class="s">REMOTE_ADDR'</span>
+    <span class="c1"># https://www.skeletonscribe.net/2013/05/practical-http-host-header-attacks.html'</span>
+    <span class="c1"># TRUSTED_HOSTS is a regular expression so you'll need to replace '.' with '\.' and add '^' and '$'</span>
+    <span class="na">TRUSTED_HOSTS</span><span class="pi">:</span> <span class="kt">!Join</span> <span class="pi">[</span><span class="s1">'</span><span class="s">\.'</span><span class="pi">,</span> <span class="kt">!Split</span> <span class="pi">[</span><span class="s1">'</span><span class="s">.'</span><span class="pi">,</span> <span class="s1">'</span><span class="s">^${self:custom.environment.domain.current.name}$'</span><span class="pi">]]</span>
+  <span class="c1"># [...]</span>
+
+<span class="na">resources</span><span class="pi">:</span>
+  <span class="na">Resources</span><span class="pi">:</span>
+    <span class="na">DistributionConfig</span><span class="pi">:</span> <span class="c1"># https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_DistributionConfig.html</span>
+      <span class="na">Enabled</span><span class="pi">:</span> <span class="no">true</span>
+      <span class="na">PriceClass</span><span class="pi">:</span> <span class="s">PriceClass_100</span> <span class="c1"># cheapest option which only proxies in North America and Europe</span>
+      <span class="na">HttpVersion</span><span class="pi">:</span> <span class="s">http2</span> <span class="c1"># the docs say this is the default but it isn't for some reason</span>
+  
+      <span class="c1"># Specify which hostnames the cdn will forward to your configuration.</span>
+      <span class="na">Aliases</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">${self:custom.environment.domain.current.name}'</span><span class="pi">]</span>
+      <span class="na">ViewerCertificate</span><span class="pi">:</span>
+        <span class="na">AcmCertificateArn</span><span class="pi">:</span> <span class="s">${self:custom.environment.domain.current.certificate}</span>
+        <span class="na">SslSupportMethod</span><span class="pi">:</span> <span class="s">sni-only</span>
+        <span class="na">MinimumProtocolVersion</span><span class="pi">:</span> <span class="s">TLSv1.2_2018</span>
+
+      <span class="c1"># [...] keep the rest of the original article</span>
+
+      <span class="na">Origins</span><span class="pi">:</span> <span class="c1"># https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-origin.html</span>
+        <span class="pi">-</span> <span class="na">Id</span><span class="pi">:</span> <span class="s">Website</span>
+          <span class="na">DomainName</span><span class="pi">:</span> <span class="kt">!Join</span> <span class="pi">[</span><span class="s1">'</span><span class="s">.'</span><span class="pi">,</span> <span class="pi">[</span><span class="kt">!Ref</span> <span class="nv">HttpApi</span><span class="pi">,</span> <span class="s1">'</span><span class="s">execute-api'</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">AWS</span><span class="pi">::</span><span class="nv">Region</span><span class="pi">,</span> <span class="s1">'</span><span class="s">amazonaws.com'</span><span class="pi">]]</span>
+          <span class="na">CustomOriginConfig</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">OriginProtocolPolicy</span><span class="pi">:</span> <span class="nv">https-only</span><span class="pi">}</span>
+          <span class="na">OriginCustomHeaders</span><span class="pi">:</span>
+            <span class="c1"># CloudFront does not set X-Forwarded headers except for X-Forwarded-For</span>
+            <span class="pi">-</span> <span class="pi">{</span><span class="nv">HeaderName</span><span class="pi">:</span> <span class="nv">X-Forwarded-Host</span><span class="pi">,</span> <span class="nv">HeaderValue</span><span class="pi">:</span> <span class="s1">'</span><span class="s">${self:custom.environment.domain.current.name}'</span><span class="pi">}</span>
+            <span class="pi">-</span> <span class="pi">{</span><span class="nv">HeaderName</span><span class="pi">:</span> <span class="nv">X-Forwarded-Proto</span><span class="pi">,</span> <span class="nv">HeaderValue</span><span class="pi">:</span> <span class="s1">'</span><span class="s">https'</span><span class="pi">}</span>
+            <span class="pi">-</span> <span class="pi">{</span><span class="nv">HeaderName</span><span class="pi">:</span> <span class="nv">X-Forwarded-Port</span><span class="pi">,</span> <span class="nv">HeaderValue</span><span class="pi">:</span> <span class="s1">'</span><span class="s">443'</span><span class="pi">}</span>
+
+      <span class="c1"># [...] keep the rest of the original article </span>
+</code></pre></div></div>
+
+<p>You now need to configure your application to accept the <code class="highlighter-rouge">X-Forwared-Host</code> header.</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> public/index.php
+<span class="gd">- Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+</span><span class="gi">+ Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL);
+</span></code></pre></div></div>
+
+<p>You can now deploy your code as well as your assets:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sls deploy <span class="c"># deploy your code and infrastructure</span>
+sls s3deploy <span class="c"># deploy your assets (you can do that before the code update after the first deploy)</span>
+</code></pre></div></div>
+
+<p>Just 1 last step. If you now search for your CloudFront distribution in the AWS console,
+you’ll get a <code class="highlighter-rouge">abc123abc123.cloudfront.com</code> domain. You need to configure your domain to point to that as a CNAME.</p>
+
+<p>And you are done!</p>
+
+<p>You should also take a look at the <a href="https://bref.sh/docs/websites.html">bref documentation on website hosting</a> since it has pictures
+and explains other ways that you may be interested in.</p>
+
+<h2 id="configure-sessions-and-the-aws-sdk">Configure sessions (and the aws-sdk)&nbsp;<a href="#configure-sessions-and-the-aws-sdk" class="permalink" title="permalink"></a></h2>
+
+<p>By default, php will write sessions into <code class="highlighter-rouge">/tmp</code> so it might appear to work at first but you session will randomly
+get lost because, just as the cache, it is limited to 1 lambda context.</p>
+
+<p>To solve this, we need to use an external service to store session.
+Luckily, the official aws-sdk comes with a php session handler that stores them in <a href="https://aws.amazon.com/dynamodb/">DynamoDB</a>
+which is the most scalable database aws has to offer so this should be <em>the solution</em> for every php project
+that needs classical sessions.</p>
+
+<h3 id="install-the-async-aws-sdk">install the <a href="https://async-aws.com/">async-aws</a>-sdk&nbsp;<a href="#install-the-async-aws-sdk" class="permalink" title="permalink"></a></h3>
+
+<p>First of all, install the <a href="https://async-aws.com/">async-aws</a>-sdk and the corresponding symfony bundle to save yourself some configuration.</p>
+
+<p>The reason I don’t use the official aws-sdk is because the async-sdk is a lot smaller.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>composer require async-aws/async-aws-bundle async-aws/dynamo-db-session
+</code></pre></div></div>
+
+<p>Symfony flex will automatically enable and configure the bundle, but we are going to make 2 changes to those generated files.</p>
+<ol>
+  <li>The generated configuration is more suited as an example for a more classical environment.
+The async-aws-sdk reads all configuration it needs from the lambda environment so we can simply delete the config file.</li>
+  <li>We only need the bundle in the lambda environment so I’m going to only load it there</li>
+</ol>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">your-project/
+</span> ├─ config/
+ ├─ ├─ packages/
+<span class="gd">-├─ ├─ └─ async_aws.yaml
+</span><span class="err">~└─</span> └─ bundles.php # and also change the environment in the bundle configuration
+<span class="err">~.env</span> # you can remove the credentials that symfony/flex created here since those aren't needed in lambda
+</code></pre></div></div>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span> config/bundles.php
+<span class="gd">- AsyncAws\Symfony\Bundle\AsyncAwsBundle::class =&gt; ['all' =&gt; true],
+</span><span class="gi">+ AsyncAws\Symfony\Bundle\AsyncAwsBundle::class =&gt; ['lambda' =&gt; true],
+</span></code></pre></div></div>
+
+<h3 id="actually-configuring-the-session-handler">actually configuring the session handler&nbsp;<a href="#actually-configuring-the-session-handler" class="permalink" title="permalink"></a></h3>
+
+<p>Now that we have configured the aws sdk so that the DynamoDB client is available with just <code class="highlighter-rouge">@async_aws.client.dynamo_db</code>.</p>
+
+<p>Symfony allows us to easily change the standard php session handler with just some configuration:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># config/packages/lambda/framework.yaml</span>
+<span class="na">framework</span><span class="pi">:</span>
+    <span class="na">session</span><span class="pi">:</span>
+        <span class="na">handler_id</span><span class="pi">:</span> <span class="s">AsyncAws\DynamoDbSession\SessionHandler</span>
+
+<span class="na">services</span><span class="pi">:</span>
+    <span class="s">AsyncAws\DynamoDbSession\SessionHandler</span><span class="pi">:</span>
+        <span class="na">class</span><span class="pi">:</span> <span class="s">AsyncAws\DynamoDbSession\SessionHandler</span>
+        <span class="na">arguments</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s1">'</span><span class="s">@async_aws.client.dynamo_db'</span>
+            <span class="pi">-</span>   <span class="na">table_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">%env(resolve:SESSION_TABLE)%'</span>
+</code></pre></div></div>
+
+<p>Now we also need the DynamoDB Table and define the <code class="highlighter-rouge">SESSION_TABLE</code> environment variable.
+We can do both easily in the serverless configuration.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless.yaml</span>
+<span class="na">provider</span><span class="pi">:</span>
+  <span class="c1"># [...]</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="na">APP_ENV</span><span class="pi">:</span> <span class="s">lambda</span>
+    <span class="na">SESSION_TABLE</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">SessionTable</span>
+
+  <span class="c1"># [...]</span>
+  <span class="na">iamRoleStatements</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">Effect</span><span class="pi">:</span> <span class="s">Allow</span>
+      <span class="na">Resource</span><span class="pi">:</span> <span class="kt">!GetAtt</span> <span class="s">SessionTable.Arn</span>
+      <span class="na">Action</span><span class="pi">:</span> <span class="s">dynamodb:*Item</span>
+
+<span class="c1"># [...]</span>
+<span class="na">resources</span><span class="pi">:</span>
+  <span class="na">Resources</span><span class="pi">:</span>
+    <span class="na">SessionTable</span><span class="pi">:</span>
+      <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::DynamoDB::Table</span> <span class="c1"># https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DynamoDB.html</span>
+      <span class="na">Properties</span><span class="pi">:</span>
+        <span class="na">TableName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">${self:service}-${opt:stage,</span><span class="nv"> </span><span class="s">self:provider.stage}-sessions'</span>
+        <span class="na">BillingMode</span><span class="pi">:</span> <span class="s">PAY_PER_REQUEST</span>
+        <span class="na">AttributeDefinitions</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="pi">{</span><span class="nv">AttributeName</span><span class="pi">:</span> <span class="nv">id</span><span class="pi">,</span> <span class="nv">AttributeType</span><span class="pi">:</span> <span class="nv">S</span><span class="pi">}</span>
+        <span class="na">KeySchema</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="pi">{</span><span class="nv">AttributeName</span><span class="pi">:</span> <span class="nv">id</span><span class="pi">,</span> <span class="nv">KeyType</span><span class="pi">:</span> <span class="nv">HASH</span><span class="pi">}</span>
+        <span class="na">TimeToLiveSpecification</span><span class="pi">:</span>
+          <span class="pi">{</span><span class="nv">AttributeName</span><span class="pi">:</span> <span class="nv">expires</span><span class="pi">,</span> <span class="nv">Enabled</span><span class="pi">:</span> <span class="nv">true</span><span class="pi">}</span>
+</code></pre></div></div>
+
+<p>And now you have working sessions.</p>
+
+<p>You don’t even need to worry about garbage collection because of the <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/howitworks-ttl.html">TimeToLiveSpecification</a> which automatically cleans up.
+You aren’t even charged for the delete operations.</p>
+
+<h2 id="configure-mailing">Configure mailing&nbsp;<a href="#configure-mailing" class="permalink" title="permalink"></a></h2>
+
+<p>AWS has <a href="https://aws.amazon.com/ses/">SES</a> to send emails. This service is region limited. Take a look at the <a href="https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/">region-table</a>.</p>
+
+<p>If you haven’t done anything yet, your account will be in sandbox mode by default.
+This means you can’t send emails to anyone who hasn’t verified that they want emails.
+The easiest way is to <a href="https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-domain-procedure.html">verify a domain</a> (like your work domain) but you can also <a href="https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses-procedure.html">verify a single email</a>.
+Later, you’ll have to request a limit increase so you can send emails to everyone
+but you’ll still need to verify an email or domain to send <em>FROM</em>.</p>
+
+<p>To use it, we are going to install the <a href="https://github.com/symfony/amazon-mailer">symfony/amazon-mailer</a>.
+Make sure you have at least version 5.1 because that is the first version which uses the async-aws-sdk if available.
+Previous versions weren’t able to use the environment variables of the lambda function to authenticate.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>composer require symfony/amazon-mailer async-aws/ses
+</code></pre></div></div>
+
+<p>Now you just need to configure your <code class="highlighter-rouge">serverless.yaml</code> to set the <code class="highlighter-rouge">MAILER_DSN</code> and the iam permissions.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless.yaml</span>
+<span class="na">provider</span><span class="pi">:</span>
+  <span class="c1"># [...]</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="c1"># [...]</span>
+    <span class="na">MAILER_DSN</span><span class="pi">:</span> <span class="s1">'</span><span class="s">ses://default'</span>
+
+  <span class="c1"># [...]</span>
+  <span class="na">iamRoleStatements</span><span class="pi">:</span>
+    <span class="c1"># allow sending emails</span>
+    <span class="c1"># https://docs.aws.amazon.com/de_de/ses/latest/DeveloperGuide/control-user-access.html#iam-and-ses</span>
+    <span class="pi">-</span> <span class="na">Effect</span><span class="pi">:</span> <span class="s">Allow</span>
+      <span class="na">Resource</span><span class="pi">:</span> <span class="s1">'</span><span class="s">*'</span> <span class="c1"># allow sending with every available identity</span>
+      <span class="c1"># https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonses.html</span>
+      <span class="na">Action</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">ses</span><span class="pi">:</span><span class="nv">SendEmail</span><span class="pi">,</span> <span class="nv">ses</span><span class="pi">:</span><span class="nv">SendRawEmail</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<p>And if you have a verified domain or email, you should now be able to send emails.</p>
+
+<h2 id="configure-doctrine">Configure doctrine&nbsp;<a href="#configure-doctrine" class="permalink" title="permalink"></a></h2>
+
+<p>There is again a good <a href="https://bref.sh/docs/environment/database.html">bref documentation on databases</a> and I might be biased but I’m going to use <a href="https://aws.amazon.com/de/rds/aurora/serverless/">Aurora Serverless</a>
+(in MySQL 5.7 compatible mode) with my own <a href="https://github.com/Nemo64/dbal-rds-data">Nemo64/dbal-rds-data</a> driver. Here is why:</p>
+
+<p>Aurora Serverless does cost at least $50.40 per month if run continuously + storage, but it saves you more money than you think.</p>
+
+<ul>
+  <li>Aurora Serverless can auto pause. This is kind of useless in production, because it takes up to a minute to boot,
+but it is really useful in dev environments.</li>
+  <li>The rds data api saves you the trouble of running your lambda in a VPC
+    <ul>
+      <li>this saves you the trouble of learning how to setup a VPC (although you probably can’t avoid it in your career)</li>
+      <li>it saves you of needing a NAT gateway wich costs $34.56 per month for 1 instance
+which then is also a single point of failure so you might want multiple gateways for reliability.</li>
+    </ul>
+  </li>
+  <li>You get seemless auto scaling if your applications grows which is especially interesting if your application is small.</li>
+</ul>
+
+<p>There are some downsides of using Aurora Serverless but if you are using the doctrine orm,
+then you probably won’t notice them and you can switch to another database later if needed.</p>
+
+<p>Note that the rds-data api is again fairly <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html#data-api.regions">region limited</a>.
+If you want to host anywhere else, you’ll need to familiarise yourself with VPC’s to securely set that up.</p>
+
+<p>Most of the documentation is already available in the Readme of <a href="https://github.com/Nemo64/dbal-rds-data">Nemo64/dbal-rds-data</a> but I’m repeating this
+specifically for this symfony setup here.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>composer require nemo64/dbal-rds-data
+</code></pre></div></div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># config/packages/lambda/doctrine.yaml</span>
+<span class="na">doctrine</span><span class="pi">:</span>
+    <span class="na">dbal</span><span class="pi">:</span>
+        <span class="c1"># the url can override the driver class</span>
+        <span class="c1"># but I can't define this driver in the url which is why i made it the default</span>
+        <span class="c1"># Doctrine\DBAL\DriverManager::parseDatabaseUrlScheme</span>
+        <span class="na">driver_class</span><span class="pi">:</span> <span class="s">Nemo64\DbalRdsData\RdsDataDriver</span>
+<span class="c1"># keep the rest of your doctrine.yaml from the prod environment</span>
+</code></pre></div></div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless.yaml</span>
+<span class="na">provider</span><span class="pi">:</span>
+  <span class="c1"># [...]</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="c1"># [...]</span>
+    <span class="na">DATABASE_URL</span><span class="pi">:</span> <span class="kt">!Join</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">'</span>
+      <span class="pi">-</span> <span class="pi">-</span> <span class="s1">'</span><span class="s">//'</span> <span class="c1"># rds-data is set to default because custom drivers can't be named in a way that they can be used here</span>
+        <span class="pi">-</span> <span class="kt">!Ref</span> <span class="s">AWS::Region</span> <span class="c1"># the hostname is the region</span>
+        <span class="pi">-</span> <span class="s1">'</span><span class="s">/${opt:stage,</span><span class="nv"> </span><span class="s">self:provider.stage}'</span>
+        <span class="pi">-</span> <span class="s1">'</span><span class="s">?driverOptions[resourceArn]='</span>
+        <span class="pi">-</span> <span class="kt">!Join</span> <span class="pi">[</span><span class="s1">'</span><span class="s">:'</span><span class="pi">,</span> <span class="pi">[</span><span class="s1">'</span><span class="s">arn:aws:rds'</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">AWS</span><span class="pi">::</span><span class="nv">Region</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">AWS</span><span class="pi">::</span><span class="nv">AccountId</span><span class="pi">,</span> <span class="s1">'</span><span class="s">cluster'</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">Database</span><span class="pi">]]</span>
+        <span class="pi">-</span> <span class="s1">'</span><span class="s">&driverOptions[secretArn]='</span>
+        <span class="pi">-</span> <span class="kt">!Ref</span> <span class="s">DatabaseSecret</span>
+  
+  <span class="c1"># [...]</span>
+  <span class="na">iamRoleStatements</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">Effect</span><span class="pi">:</span> <span class="s">Allow</span>
+      <span class="na">Resource</span><span class="pi">:</span> <span class="s1">'</span><span class="s">*'</span> <span class="c1"># it isn't supported to limit this</span>
+      <span class="c1"># https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonrdsdataapi.html</span>
+      <span class="na">Action</span><span class="pi">:</span> <span class="s">rds-data:*</span>
+    <span class="c1"># this rds-data endpoint will use the same identity to get the secret </span>
+    <span class="pi">-</span> <span class="na">Effect</span><span class="pi">:</span> <span class="s">Allow</span>
+      <span class="na">Resource</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseSecret</span>
+      <span class="c1"># https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awssecretsmanager.html</span>
+      <span class="na">Action</span><span class="pi">:</span> <span class="s">secretsmanager:GetSecretValue</span>
+
+<span class="c1"># [...]</span>
+<span class="na">resources</span><span class="pi">:</span>
+  <span class="na">Resources</span><span class="pi">:</span>
+      <span class="c1"># Make sure that there is a default VPC in your account.</span>
+      <span class="c1"># https://console.aws.amazon.com/vpc/home#vpcs:isDefault=true</span>
+      <span class="c1"># If not, click "Actions" &gt; "Create Default VPC"</span>
+      <span class="c1"># While your applications doesn't need it, the database must still be provisioned into a VPC so use the default. </span>
+      <span class="na">Database</span><span class="pi">:</span>
+        <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::RDS::DBCluster</span> <span class="c1"># https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html</span>
+        <span class="na">Properties</span><span class="pi">:</span>
+          <span class="na">Engine</span><span class="pi">:</span> <span class="s">aurora-mysql</span> <span class="c1"># aurora = mysql 5.6, aurora-mysql = mysql 5.7</span>
+          <span class="na">EngineMode</span><span class="pi">:</span> <span class="s">serverless</span>
+          <span class="na">EnableHttpEndpoint</span><span class="pi">:</span> <span class="no">true</span> <span class="c1"># this is the important part</span>
+          <span class="na">DatabaseName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">${opt:stage,</span><span class="nv"> </span><span class="s">self:provider.stage}'</span>
+          <span class="na">MasterUsername</span><span class="pi">:</span> <span class="kt">!Join</span> <span class="pi">[</span><span class="s1">'</span><span class="s">'</span><span class="pi">,</span> <span class="pi">[</span><span class="s1">'</span><span class="s">{{resolve:secretsmanager:'</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">DatabaseSecret</span><span class="pi">,</span> <span class="s1">'</span><span class="s">:SecretString:username}}'</span><span class="pi">]]</span>
+          <span class="na">MasterUserPassword</span><span class="pi">:</span> <span class="kt">!Join</span> <span class="pi">[</span><span class="s1">'</span><span class="s">'</span><span class="pi">,</span> <span class="pi">[</span><span class="s1">'</span><span class="s">{{resolve:secretsmanager:'</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">DatabaseSecret</span><span class="pi">,</span> <span class="s1">'</span><span class="s">:SecretString:password}}'</span><span class="pi">]]</span>
+          <span class="c1"># https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-scalingconfiguration.html</span>
+          <span class="na">ScalingConfiguration</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">MinCapacity</span><span class="pi">:</span> <span class="nv">1</span><span class="pi">,</span> <span class="nv">MaxCapacity</span><span class="pi">:</span> <span class="nv">2</span><span class="pi">,</span> <span class="nv">AutoPause</span><span class="pi">:</span> <span class="nv">true</span><span class="pi">}</span>
+      <span class="na">DatabaseSecret</span><span class="pi">:</span>
+        <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::SecretsManager::Secret</span> <span class="c1"># https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secret.html</span>
+        <span class="na">Properties</span><span class="pi">:</span>
+          <span class="na">GenerateSecretString</span><span class="pi">:</span>
+            <span class="na">SecretStringTemplate</span><span class="pi">:</span> <span class="s1">'</span><span class="s">{"username":</span><span class="nv"> </span><span class="s">"admin"}'</span>
+            <span class="na">GenerateStringKey</span><span class="pi">:</span> <span class="s2">"</span><span class="s">password"</span>
+            <span class="na">PasswordLength</span><span class="pi">:</span> <span class="m">41</span> <span class="c1"># max length of a mysql password</span>
+            <span class="na">ExcludeCharacters</span><span class="pi">:</span> <span class="s1">'</span><span class="s">"@/\'</span>
+      <span class="na">DatabaseSecretAttachment</span><span class="pi">:</span>
+        <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::SecretsManager::SecretTargetAttachment</span> <span class="c1"># https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html</span>
+        <span class="na">Properties</span><span class="pi">:</span>
+          <span class="na">SecretId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseSecret</span>
+          <span class="na">TargetId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">Database</span>
+          <span class="na">TargetType</span><span class="pi">:</span> <span class="s">AWS::RDS::DBCluster</span>
+</code></pre></div></div>
+
+<p>And now your application has a database.
+You can now run the usual commands to create the schema but you’ll have to do that within your lambda so:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sls invoke <span class="nt">-f</span> console <span class="nt">-d</span> <span class="s1">'{"cli": "doctrine:migrations:migrate --no-interaction"}'</span>
+<span class="c"># or</span>
+php vendor/bin/bref cli symfony-project-dev-console <span class="nt">--region</span><span class="o">=</span>eu-west-1 <span class="nt">--</span> doctrine:migrations:migrate <span class="nt">--no-interaction</span>
+</code></pre></div></div>
+
+<p>You can use the <a href="https://bref.sh/docs/runtimes/console.html#usage">bref cli command</a> which has a much nicer output but you’ll need to pass the region and the full lambda name.</p>
+
+<h2 id="working-example">Working example&nbsp;<a href="#working-example" class="permalink" title="permalink"></a></h2>
+
+<p>I build a working symfony 2 application as a reference and to test out new things outside of real projects.</p>
+
+<p>You can find it here: <a href="https://github.com/Nemo64/serverless-symfony">github.com/Nemo64/serverless-symfony</a>.
+Usage instructions are in the readme.</p>
+
+<h2 id="final-words">Final words&nbsp;<a href="#final-words" class="permalink" title="permalink"></a></h2>
+
+<p>That’s it for the moment.
+There are still a few things I haven’t touched and a lot I probably haven’t even discovered.
+I’ll probably keep this post update just as documentation for myself.</p>
+
+<p>I want to thank <a href="https://mnapoli.fr/">Matthieu</a> for the unbelievable amount of work he continues to put into <a href="https://bref.sh/">bref</a>
+and also <a href="https://tnyholm.se/">Tobias</a> because he somehow gets involved in nearly all issue I open related to symfony and aws.</p>
+
+
+    </div>
+
+    <aside class="page-content">
+        <div hidden typeof="Organization" property="publisher">
+            <meta property="name" content="Marco Zone">
+            <div property="logo" typeof="ImageObject">
+                <meta property="url" content="https://www.marco.zone/assets/marco-zone-text.png">
+                <meta property="width" content="378">
+                <meta property="height" content="60">
+            </div>
+        </div>
+
+        <figure class="post__similar">
+            
+            
+            
+            <h2>Similar "AWS" posts</h2>
+            <ul>
+                
+                <li><a href="/shared-aurora-serverless-using-cloudformation">Share an Aurora Serveless between services using CloudFormation</a></li>
+                
+                <li><a href="/asset-distribution-on-a-aws-serverless-multipage-application">Static resource distribution on a aws serverless multipage application</a></li>
+                
+            </ul>
+            
+            
+            
+            
+            <h2>Similar "serverless" posts</h2>
+            <ul>
+                
+                <li><a href="/shared-aurora-serverless-using-cloudformation">Share an Aurora Serveless between services using CloudFormation</a></li>
+                
+                <li><a href="/asset-distribution-on-a-aws-serverless-multipage-application">Static resource distribution on a aws serverless multipage application</a></li>
+                
+            </ul>
+            
+            
+            
+            
+            <h2>Similar "Software-Development" posts</h2>
+            <ul>
+                
+                <li><a href="/doctrine-event-guide">Guide to doctrine orm events</a></li>
+                
+                <li><a href="/shared-aurora-serverless-using-cloudformation">Share an Aurora Serveless between services using CloudFormation</a></li>
+                
+                <li><a href="/official-docker-php-apache-https">Configure https for the official docker php apache images</a></li>
+                
+                <li><a href="/docker-uses-over-100-percent-cpu">Docker for mac uses over 100% cpu while doing nothing</a></li>
+                
+                <li><a href="/typo3-und-webpack">Webpack in TYPO3 integrieren</a></li>
+                
+            </ul>
+            
+            
+        </figure>
+
+        
+        <figure class="post__author" id="author">
+            <h2>Author:</h2>
+            <div class="author" property="author" typeof="Person">
+                <div class="author__meta">
+                    <div class="author__image">
+                        <amp-img srcset="/assets/person/marco-desaturate.jpg 160w" width="160" height="160" layout="responsive" sizes="5rem"></amp-img><noscript><img src="/assets/person/marco-desaturate.jpg" alt="" property="image" ></noscript>
+                    </div>
+                    <div class="author__body">
+                        <h3 class="author__name" property="name">Marco Pfeiffer</h3>
+                        <div><a href="https://twitter.com/TheTrueNemo">@TheTrueNemo</a></div>
+                        <div><a href="https://github.com/Nemo64">github.com/Nemo64</a></div>
+                        <div>working for <a href="https://www.hauptsache.net/">hauptsache.net</a></div>
+                    </div>
+                </div>
+            </div>
+        </figure>
+    </aside>
+
+</main>
+
+
+
+<footer id="page-footer" class="page-footer">
+    <div class="page-footer__copyright">
+        <span>© 2016 – 2022</span>
+        <span>Marco Pfeiffer</span>
+    </div>
+    <ul class="page-footer__nav">
+        
+        <li><a href="/datenschutzerklaerung" rel="nofollow">Datenschutzerklärung</a></li>
+        <li><a href="/impressum" rel="nofollow">Impressum</a></li>
+        
+    </ul>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html ⚡ lang="en" prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+<head>
+    <meta charset="utf-8">
+
+    <!-- external resources -->
+    <link rel="preload" as="script" href="https://cdn.ampproject.org/v0.js">
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    
+    <script async custom-element="amp-timeago" src="https://cdn.ampproject.org/v0/amp-timeago-0.1.js"></script>
+    <script async custom-element="amp-iframe" src="https://cdn.ampproject.org/v0/amp-iframe-0.1.js"></script>
+    
+
+    <!-- fonts -->
+    <link rel="preconnect dns-prefetch" href="https://fonts.gstatic.com/" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Josefin+Slab:600|Roboto:300">
+
+    <title>Share an Aurora Serveless between services using CloudFormation</title>
+
+    <!-- references -->
+    <link rel="canonical" href="https://www.marco.zone/shared-aurora-serverless-using-cloudformation">
+    <link rel="alternate" type="application/rss+xml" title="Marco Zone" href="/feed.xml">
+
+    <!-- favicon/browser configuration -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#cd5c5c">
+    <meta name="apple-mobile-web-app-title" content="Marco Zone">
+    <meta name="application-name" content="Marco Zone">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- normal meta information -->
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"WebSite","name":"Marco Zone","alternateName":"Die Marco Zone","url":"https://www.marco.zone/","sameAs":"https://twitter.com/TheTrueNemo"}</script>
+    <meta name="description" content="Securely set up RDS Aurora Serverless and use custom resources in CloudFormation to create additional databases and users across multiple stages or even serv...">
+    <meta name="author" content="Marco Pfeiffer">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <meta name="date" content="Sun, 16 Aug 2020 17:17:00 +0200">
+    <meta name="keywords" content="AWS, serverless, MySQL, Software-Development">
+    
+
+    <!-- open graph -->
+    <meta property="og:title" content="Share an Aurora Serveless between services using CloudFormation">
+    <meta property="og:description" content="Securely set up RDS Aurora Serverless and use custom resources in CloudFormation to create additional databases and users across multiple stages or even services.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.marco.zone/shared-aurora-serverless-using-cloudformation">
+    <meta property="og:locale" content="en">
+    <meta property="og:site_name" content="Marco Zone">
+    
+    <meta property="og:image" content="https://www.marco.zone/assets/aws-aurora.png">
+    
+    
+    <meta property="article:published_time" content="2020-08-16T17:17:00+02:00">
+    <meta property="article:modified_time" content="2020-08-17T14:18:00+02:00">
+    
+    <meta property="article:tag" content="AWS">
+    <meta property="article:tag" content="serverless">
+    <meta property="article:tag" content="MySQL">
+    <meta property="article:tag" content="Software-Development">
+    
+
+    <!-- twitter card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@TheTrueNemo" />
+    <meta name="twitter:creator" content="@TheTrueNemo" />
+
+    <!-- styles -->
+    
+    <style amp-custom>body{margin:0;background-color:white;font-family:"Roboto", Helvetica, Arial, sans-serif;font-weight:300;line-height:1.5;color:#333;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}@media (prefers-color-scheme: dark){body{background:#221f1d;color:white}}strong,b{font-family:Arial, Helvetica, sans-serif;font-weight:700}pre,code{font-family:"Courier New", monospace;font-size:.9rem;line-height:1.2;letter-spacing:-0.02em}h1,h2,h3,.headline{font-family:"Josefin Slab", "Times New Roman", serif;font-weight:400;line-height:1.1;color:indianred;padding-top:2rem;padding-top:calc(4.1rem - 1.05em);margin:0;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}.counter-headline{padding-bottom:2rem}h1+h2,h2+h3{margin-top:1rem}h1{font-size:2rem}h2{font-size:1.8rem}h3{font-size:1.5rem}a{color:indianred;text-decoration:none;-webkit-tap-highlight-color:rgba(205,92,92,0.2)}p>a:hover,p>a:focus,li>a:hover,li>a:focus{text-decoration:underline}a:hover{color:orangered}:focus{outline:none;box-shadow:0 0 1px 1px orangered, 0 0 1px orangered inset}::selection{background:rgba(255,69,0,0.2);color:black}::-moz-selection{background:rgba(255,69,0,0.2);color:black}@media screen{.permalink{position:relative;vertical-align:baseline;display:inline-block;width:14px;height:15px;border:.5rem solid transparent;margin:-.5rem 0 -.5rem -.5rem;transition:opacity .2s, transform .2s;opacity:0;transform:translateX(-10%)}h1:hover>.permalink,h2:hover>.permalink,h3:hover>.permalink{opacity:1;transform:translateX(0)}.permalink::before,.permalink::after{content:"";position:absolute;width:5px;height:5px;border:2px solid currentColor;border-radius:50%}.permalink::before{left:5px;bottom:0}.permalink::after{left:0;bottom:6px}}aside,p{margin-top:.5rem;margin-bottom:0}article,aside,footer,header,nav,section,main{display:block}pre{margin:0}.lead{font-family:"Josefin Slab", "Times New Roman", serif;font-size:1.7rem;line-height:2.1rem;margin-top:.3666666667rem;text-align:left;letter-spacing:-.05em}html,body{scroll-behavior:smooth}@media screen and (min-width: 49.75rem) and (min-height: 30rem){body{padding-left:14rem}}amp-img,img{max-width:100%;height:auto}figure>h2,figure>h3{margin-top:1rem}@media screen{div.highlighter-rouge,figure,blockquote{clear:both;padding:1rem;border-color:whitesmoke;border-style:solid;border-width:1px 0;margin:1rem 0;overflow-x:auto}div.highlighter-rouge+div.highlighter-rouge,div.highlighter-rouge+figure,div.highlighter-rouge+blockquote,figure+div.highlighter-rouge,figure+figure,figure+blockquote,blockquote+div.highlighter-rouge,blockquote+figure,blockquote+blockquote{margin-top:-1rem;border-top-width:0}div.highlighter-rouge::-webkit-scrollbar,figure::-webkit-scrollbar,blockquote::-webkit-scrollbar{height:.5rem;margin:-.5rem}div.highlighter-rouge::-webkit-scrollbar-thumb,figure::-webkit-scrollbar-thumb,blockquote::-webkit-scrollbar-thumb{background-color:whitesmoke}}@media screen and (prefers-color-scheme: dark){div.highlighter-rouge,figure,blockquote{border-color:#333333}div.highlighter-rouge::-webkit-scrollbar-thumb,figure::-webkit-scrollbar-thumb,blockquote::-webkit-scrollbar-thumb{background-color:#333333}}@media screen{.page-content>p,.page-content>.fake-paragraph,.page-content>ul,.page-content>ol,.page-content>h1,.page-content>h2,.page-content>h3,.page-content>amp-img,.page-content>noscript>img{box-sizing:border-box;max-width:33.75rem;margin-left:1rem;margin-right:1rem}}@media screen and (max-width: 33.75rem){.page-content>figure>[sizes*="(max-width:33.75rem)100vw"]{display:block;margin:-1rem;max-width:none}}@media screen and (device-pixel-ratio: 2) and (min-width: 35.75rem), screen and (-webkit-device-pixel-ratio: 2) and (min-width: 35.75rem), screen and (min-resolution: 288dpi){.page-content>figure>amp-img[srcset]:not([srcset*="1080w"])>img{image-rendering:-webkit-crisp-edges;image-rendering:-moz-crisp-edges;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor}}blockquote>p{box-sizing:border-box;max-width:32.75rem;margin-left:1rem;margin-right:1rem}blockquote cite{display:block;font-size:0.8em}.tldr-wrapper{max-width:35.75rem;padding-left:1rem;padding-right:1rem}@media print, screen and (min-width: 35.75rem){.tldr-left{width:18rem;clear:left;float:left;margin-right:1rem}.tldr-right{width:18rem;clear:right;float:right;margin-left:1rem}p{text-align:justify}}.highlighter-rouge .c,.highlighter-rouge .c1,.highlighter-rouge .c2,.highlighter-rouge .sd{color:darkgray}.highlighter-rouge .s,.highlighter-rouge .s1,.highlighter-rouge .s2,.highlighter-rouge .k,.highlighter-rouge .nv{color:indianred}.language-yaml .s,.language-yaml .s1,.language-yaml .s2,.language-yaml .nv,.language-yaml .nv{color:inherit}.language-yaml .na{color:indianred}.highlighter-rouge .k+.nv{color:inherit}.highlighter-rouge .gd{background-color:rgba(205,92,92,0.2)}.highlighter-rouge .gi{background-color:rgba(144,238,144,0.2)}.page-header{margin:0 auto}.page-header__logo{display:inline-block;padding:1rem;margin:0;font-size:1.5rem}@media screen and (min-width: 49.75rem) and (min-height: 30rem){.page-header{position:fixed;left:0;top:0;width:14rem;height:100%;padding:1rem 0;box-sizing:border-box;backface-visibility:hidden}.page-header__logo{display:block;float:right;padding:1rem;font-size:2rem}}@media print{.page-header{display:none}}.page-footer{min-height:3rem;margin-top:3rem;padding:1rem 1rem;max-width:33.75rem;font-size:.8em}.page-footer__copyright{display:block;float:left}.page-footer__copyright>span{display:inline-block}.page-footer__nav{display:block;float:right;list-style:none;margin:0;padding:0}.page-footer__nav>li{display:inline-block;margin:0;padding:0}amp-timeago{text-align:left;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}.post__image{position:absolute;left:0;top:0;width:100vw;z-index:-1;opacity:0.1;-webkit-mask:linear-gradient(to bottom, #000 75vw, transparent);mask:linear-gradient(to bottom, #000 75vw, transparent)}@media (min-width: 35.75rem){.post__head{display:flex;align-items:center}.post__image{position:relative;width:10rem;opacity:1;flex-shrink:0;margin:0 0 0 1rem;order:1}.post__image-text{flex-grow:1}}.post__subheadline{color:indianred;margin-top:.1em}.post_lead{clear:both}.post__content>amp-img,.post__content>noscript>img{margin-top:1em;margin-bottom:1em}.post__comments{margin-top:4rem;margin-bottom:4rem;max-width:35.75rem}.author__meta{display:table;margin-top:1rem;margin-bottom:1rem}.author__image,.author__body{display:table-cell;vertical-align:middle}.author__image{width:160px}main aside{margin-top:4rem}.author__image{width:80px;float:left;padding-right:.5rem}.author__image>amp-img,.author__image>noscript>img{border-radius:50%}.author__name{margin:0;padding:0}@media print{.post__comments{display:none}}</style>
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+
+</head>
+<body>
+
+<header id="page-header" class="page-header">
+    <a class="page-header__logo headline" href="/">Marco Zone:</a>
+</header>
+
+<main class="post" vocab="http://schema.org/" typeof="BlogPosting" resource="https://www.marco.zone/shared-aurora-serverless-using-cloudformation">
+    <meta property="mainEntityOfPage" content="https://www.marco.zone/shared-aurora-serverless-using-cloudformation">
+
+    <div class="page-content">
+        <header class="fake-paragraph post__head">
+            
+                <amp-img srcset="/assets/resized/160/aws-aurora.png 160w, /assets/aws-aurora.png 300w" width="300" height="300" alt="AWS Aurora logo" title="source: https://aws.amazon.com/de/architecture/icons/" class="post__image" layout="responsive" sizes="(min-width: 35.75rem) 10rem, 100vw"></amp-img><noscript><img src="/assets/aws-aurora.png" alt="AWS Aurora logo" title="source: https://aws.amazon.com/de/architecture/icons/" property="image" class="post__image"></noscript>
+            
+            <div class="post__image-text">
+                <h1 class="post__headline" property="headline">
+                    Share an Aurora Serveless between services using CloudFormation&nbsp;<a href="#" class="permalink" title="permalink"></a>
+                </h1>
+
+                <p class="post__subheadline counter-headline">
+                    published
+                    <amp-timeago datetime="2020-08-16T17:17:00+02:00" property="datePublished" cutoff="15768000" width="15em" height="1.5em">
+                        16 August 2020
+                    </amp-timeago>
+                    <meta property="dateModified" content="2020-08-17T14:18:00+02:00">
+                </p>
+            </div>
+        </header>
+
+        <p class="post__lead" property="description">
+            Securely set up RDS Aurora Serverless and use custom resources in CloudFormation to create additional databases and users across multiple stages or even services.
+        </p>
+    </div>
+
+    
+    
+    
+    <nav class="page-content post__index">
+        <h2>Table of contents</h2>
+        
+        <ul>
+        
+            
+            
+            
+            
+            <li><a href="#why-would-you-even-want-to-share-a-database">Why would you even want to share a Database?</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#basic-structure">Basic structure</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#prepare-serverless">Prepare serverless</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#define-a-vpc">Define a VPC</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#define-the-database-server">Define the Database Server</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#implement-custom-resources">Implement custom resources</a></li>
+        
+            
+            <ul>
+            
+            
+            <li><a href="#create-a-database-custom-resource">Create a database custom resource</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#create-a-user-custom-resource">Create a user custom resource</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#bring-it-together">bring it together</a></li>
+        
+            
+            
+            </ul>
+            
+            <li><a href="#bonus-schedule-the-autopause-feature">Bonus: schedule the AutoPause feature</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#working-example">Working example</a></li>
+        
+            
+            
+            
+            
+            <li><a href="#changes">Changes</a></li>
+        
+        </ul>
+    </nav>
+    
+
+    <div class="page-content post__content" property="articleBody">
+        <h2 id="why-would-you-even-want-to-share-a-database">Why would you even want to share a Database?&nbsp;<a href="#why-would-you-even-want-to-share-a-database" class="permalink" title="permalink"></a></h2>
+
+<p>Everything that allocates RAM and CPU on AWS is quiet expensive.
+Although it is called Aurora <em>Serverless</em>, it still allocates a server that just auto scales very well.</p>
+
+<p>Aurora is capable of scaling down to 0 compute, but the wake up process is way too slow to use this in production,
+and it’s also quiet annoying in dev environment.</p>
+
+<p>Then, if you use microservices, it is even harder to justify an entire database server for a service
+which idles most of the time and/or only stores a few hundred records.</p>
+
+<p>MySQL has a solution build in: databases, which act like namespaces.
+You can use a single MySQL server for multiple purposes by just creating multiple databases and users.
+That sounds obvious but managing it is traditionally an annoying manual process and AWS has no way of declaratively doing so.</p>
+
+<p>So let’s do something about it.</p>
+
+<p>I want all infrastructure declaration in CloudFormation.
+Every manual step is 1 step too much.</p>
+
+<h2 id="basic-structure">Basic structure&nbsp;<a href="#basic-structure" class="permalink" title="permalink"></a></h2>
+
+<figure>
+    <amp-img srcset="/assets/resized/160/aws-aurora-shared.png 160w, /assets/resized/320/aws-aurora-shared.png 320w, /assets/aws-aurora-shared.png 461w" width="461" height="291" alt="Chart showing a single Aurora used by multiple CloudFormation stacks" title="source: https://aws.amazon.com/de/architecture/icons/ and combined with draw.io" layout="responsive" sizes="(max-width:30.8125rem)calc(100vw-2rem),28.8125rem"></amp-img><noscript><img src="/assets/aws-aurora-shared.png" alt="Chart showing a single Aurora used by multiple CloudFormation stacks" title="source: https://aws.amazon.com/de/architecture/icons/ and combined with draw.io" property="" /></noscript>
+</figure>
+
+<p>I’m going to use serverless to deploy the infrastructure, but most of my examples will be pure CloudFormation
+so you should be able to get along if you use other tools.</p>
+
+<p>I’m going to use 2 kinds of cloudformation stacks</p>
+
+<ol>
+  <li>A shared stack (<code class="highlighter-rouge">serverless-shared.yml</code>) which i’m going to deploy once per AWS account.
+It contains the Database Server, the VPC configuration and a few Lambda functions that help us in creating additional resources.</li>
+  <li>The application stack (<code class="highlighter-rouge">serverless.yml</code>) which I use as an example service and defines a MySQL database
+and potentially multiple MySQL users with different privileges.</li>
+</ol>
+
+<h2 id="prepare-serverless">Prepare serverless&nbsp;<a href="#prepare-serverless" class="permalink" title="permalink"></a></h2>
+
+<p>You can skip this if you don’t use serverless, but here is the first part of my <code class="highlighter-rouge">serverless-shared.yml</code>.
+Note the <code class="highlighter-rouge">variableSyntax</code> definition. This allows me to use the <code class="highlighter-rouge">!Sub</code> function in a serverless file,
+which would normally collide with the serverless variable syntax.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless-shared.yml</span>
+<span class="na">service</span><span class="pi">:</span> <span class="s">shared</span>
+
+<span class="na">provider</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">aws</span>
+  <span class="na">region</span><span class="pi">:</span> <span class="s">eu-west-1</span> 
+  <span class="na">stage</span><span class="pi">:</span> <span class="s">${opt:stage, 'global'}</span> <span class="c1"># generic stage name to indicate that this is not targeted at dev/prod environments</span>
+  <span class="c1"># Allow using CloudFormation variable syntax without changing the serverless syntax</span>
+  <span class="c1"># The differentiating factor is the capitalization of the first character</span>
+  <span class="c1"># Upper case character means CloudFormation syntax, eg: ${AWS::Region}, ${DatabaseSecret}</span>
+  <span class="c1"># Everything else means serverless syntax, eg: ${ssm:...}, ${self:...}</span>
+  <span class="c1"># https://www.serverless.com/framework/docs/providers/aws/guide/variables#using-custom-variable-syntax</span>
+  <span class="na">variableSyntax</span><span class="pi">:</span> <span class="s2">"</span><span class="se">\\</span><span class="s">${((?![A-Z])[</span><span class="nv"> </span><span class="s">~:a-zA-Z0-9._@'</span><span class="se">\"</span><span class="s">,</span><span class="se">\\</span><span class="s">-</span><span class="se">\\</span><span class="s">/</span><span class="se">\\</span><span class="s">(</span><span class="se">\\</span><span class="s">)]+?)}"</span>
+
+<span class="na">resources</span><span class="pi">:</span>
+    <span class="c1"># CloudFormation template here</span>
+</code></pre></div></div>
+
+<h2 id="define-a-vpc">Define a VPC&nbsp;<a href="#define-a-vpc" class="permalink" title="permalink"></a></h2>
+
+<p>All resources in AWS have to be deployed to a VPC.
+The Aurora CloudFormation template says that it’s optional but in reality: it’ll just deploy the database into the default VPC
+and the default VPC can’t be directly addressed in CloudFormation so that is a no-go.</p>
+
+<p>So let’s define the simplest VPC in CloudFormation possible.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless-shared.yml</span>
+<span class="na">Resources</span><span class="pi">:</span>
+  <span class="c1"># the simplest possible VPC with 3 Availability Zones</span>
+  <span class="na">VPC</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::EC2::VPC</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">CidrBlock</span><span class="pi">:</span> <span class="s">10.192.0.0/16</span>
+      <span class="na">EnableDnsSupport</span><span class="pi">:</span> <span class="no">true</span>
+      <span class="na">EnableDnsHostnames</span><span class="pi">:</span> <span class="no">true</span>
+      <span class="na">Tags</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="pi">{</span><span class="nv">Key</span><span class="pi">:</span> <span class="nv">Name</span><span class="pi">,</span> <span class="nv">Value</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="nv">AWS</span><span class="pi">::</span><span class="nv">StackName</span><span class="pi">}</span> <span class="c1"># the console will display this as the name</span>
+  
+  <span class="na">Subnet1</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::EC2::Subnet</span>
+    <span class="na">Properties</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">CidrBlock</span><span class="pi">:</span> <span class="nv">10.192.0.0/20</span><span class="pi">,</span> <span class="nv">AvailabilityZone</span><span class="pi">:</span> <span class="kt">!Select</span> <span class="pi">[</span><span class="nv">0</span><span class="pi">,</span> <span class="kt">!GetAZs</span> <span class="s1">'</span><span class="s">'</span><span class="pi">],</span> <span class="nv">VpcId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="nv">VPC</span><span class="pi">}</span>
+  <span class="na">Subnet2</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::EC2::Subnet</span>
+    <span class="na">Properties</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">CidrBlock</span><span class="pi">:</span> <span class="nv">10.192.16.0/20</span><span class="pi">,</span> <span class="nv">AvailabilityZone</span><span class="pi">:</span> <span class="kt">!Select</span> <span class="pi">[</span><span class="nv">1</span><span class="pi">,</span> <span class="kt">!GetAZs</span> <span class="s1">'</span><span class="s">'</span><span class="pi">],</span> <span class="nv">VpcId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="nv">VPC</span><span class="pi">}</span>
+  <span class="na">Subnet3</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::EC2::Subnet</span>
+    <span class="na">Properties</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">CidrBlock</span><span class="pi">:</span> <span class="nv">10.192.32.0/20</span><span class="pi">,</span> <span class="nv">AvailabilityZone</span><span class="pi">:</span> <span class="kt">!Select</span> <span class="pi">[</span><span class="nv">2</span><span class="pi">,</span> <span class="kt">!GetAZs</span> <span class="s1">'</span><span class="s">'</span><span class="pi">],</span> <span class="nv">VpcId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="nv">VPC</span><span class="pi">}</span>
+  
+  <span class="c1"># subnet and security groups for the database later </span>
+  <span class="na">DatabaseSubnetGroup</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::RDS::DBSubnetGroup</span>
+    <span class="na">Properties</span><span class="pi">:</span> 
+      <span class="na">DBSubnetGroupDescription</span><span class="pi">:</span> <span class="s">Database</span>
+      <span class="na">SubnetIds</span><span class="pi">:</span> <span class="pi">[</span><span class="kt">!Ref</span> <span class="nv">Subnet1</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">Subnet2</span><span class="pi">,</span> <span class="kt">!Ref</span> <span class="nv">Subnet3</span><span class="pi">]</span>
+  <span class="na">DatabaseSecurityGroup</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::EC2::SecurityGroup</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">GroupDescription</span><span class="pi">:</span> <span class="s">Database</span>
+      <span class="na">VpcId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">VPC</span>
+      <span class="na">SecurityGroupIngress</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="pi">{</span><span class="nv">CidrIp</span><span class="pi">:</span> <span class="kt">!GetAtt</span> <span class="nv">VPC.CidrBlock</span><span class="pi">,</span> <span class="nv">FromPort</span><span class="pi">:</span> <span class="nv">3306</span><span class="pi">,</span> <span class="nv">ToPort</span><span class="pi">:</span> <span class="nv">3306</span><span class="pi">,</span> <span class="nv">IpProtocol</span><span class="pi">:</span> <span class="nv">tcp</span><span class="pi">}</span>
+</code></pre></div></div>
+
+<p>This is a simple VPC with 3 subnets to cover 3 Availability-Zones.</p>
+
+<p>Don’t worry about evenly covering Availability-Zones, AWS will randomly allocate them to your AWS Account,
+so it is perfectly fine to always use the first few Zones.
+But you definitely want at least 3 to take advantage of automatic failovers.</p>
+
+<p>I then also define the subnet group that we later use for the actual database.</p>
+
+<h2 id="define-the-database-server">Define the Database Server&nbsp;<a href="#define-the-database-server" class="permalink" title="permalink"></a></h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless-shared.yml</span>
+<span class="na">Resources</span><span class="pi">:</span>
+  <span class="c1"># [...]</span>
+  <span class="na">DatabaseSecret</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::SecretsManager::Secret</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">Name</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">/${AWS::StackName}/database/root'</span>
+      <span class="na">GenerateSecretString</span><span class="pi">:</span>
+        <span class="na">SecretStringTemplate</span><span class="pi">:</span> <span class="s1">'</span><span class="s">{"username":</span><span class="nv"> </span><span class="s">"root"}'</span>
+        <span class="na">GenerateStringKey</span><span class="pi">:</span> <span class="s2">"</span><span class="s">password"</span>
+        <span class="na">ExcludeCharacters</span><span class="pi">:</span> <span class="s1">'</span><span class="s">"@/\'</span>
+  <span class="na">DatabaseServer</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::RDS::DBCluster</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">Engine</span><span class="pi">:</span> <span class="s">aurora-mysql</span> <span class="c1"># aurora = mysql 5.6, aurora-mysql = mysql 5.7</span>
+      <span class="na">EngineMode</span><span class="pi">:</span> <span class="s">serverless</span>
+      <span class="na">EnableHttpEndpoint</span><span class="pi">:</span> <span class="no">true</span>
+      <span class="na">MasterUsername</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">{{resolve:secretsmanager:${DatabaseSecret}:SecretString:username}}'</span>
+      <span class="na">MasterUserPassword</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">{{resolve:secretsmanager:${DatabaseSecret}:SecretString:password}}'</span>
+      <span class="na">BackupRetentionPeriod</span><span class="pi">:</span> <span class="m">10</span> <span class="c1"># days</span>
+      <span class="na">ScalingConfiguration</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">MinCapacity</span><span class="pi">:</span> <span class="nv">1</span><span class="pi">,</span> <span class="nv">MaxCapacity</span><span class="pi">:</span> <span class="nv">2</span><span class="pi">,</span> <span class="nv">AutoPause</span><span class="pi">:</span> <span class="nv">true</span><span class="pi">}</span>
+      <span class="na">DBSubnetGroupName</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseSubnetGroup</span>
+      <span class="na">VpcSecurityGroupIds</span><span class="pi">:</span> <span class="pi">[</span><span class="kt">!GetAtt</span> <span class="nv">DatabaseSecurityGroup.GroupId</span><span class="pi">]</span>
+  <span class="na">DatabaseSecretAttachment</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::SecretsManager::SecretTargetAttachment</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">SecretId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseSecret</span>
+      <span class="na">TargetId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseServer</span>
+      <span class="na">TargetType</span><span class="pi">:</span> <span class="s">AWS::RDS::DBCluster</span>
+
+<span class="na">Outputs</span><span class="pi">:</span>
+  <span class="na">DatabaseServer</span><span class="pi">:</span>
+    <span class="na">Description</span><span class="pi">:</span> <span class="s">The Database Server Arn</span>
+    <span class="na">Value</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">arn:${AWS::Partition}:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DatabaseServer}'</span>
+    <span class="na">Export</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Name</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">${AWS::StackName}-database-server'</span><span class="pi">}</span>
+</code></pre></div></div>
+
+<p>Let’s go though it.</p>
+
+<ol>
+  <li>Define a Secret to store the credentials of the master user and generate it’s password.</li>
+  <li>Define the Database Server. An Aurora serverless in mysql 5.7 mode.
+Aurora usually brings new features to 5.6 first, but 5.7 allows longer usernames (32 chars vs 16)
+and longer indexes which results in no error when trying to index a <code class="highlighter-rouge">VARCHAR(255)</code> field in utf8mb4 mode.
+Those 2 reasons
+<a href="https://github.com/DamienHarper/auditor-bundle/issues/178">resolve</a>
+<a href="https://github.com/symfony/symfony/issues/37116">some</a>
+<a href="https://github.com/doctrine/dbal/issues/3419">headaches</a>,
+so I’d stick with 5.7 unless you have a good reason not to.
+Also <a href="https://www.mysqltutorial.org/mysql-json/">JSON columns</a>.</li>
+  <li>I attach the secret to the Database which will add a few fields like <code class="highlighter-rouge">host</code> to it which is nice,
+because it means that one only needs to read the secret and has all information to connect to the database.</li>
+</ol>
+
+<p>The secret content will look like this in the end:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"password"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RandomPassword123!"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"engine"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mysql"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"port"</span><span class="p">:</span><span class="w"> </span><span class="mi">3306</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"host"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stack-name-cluster-name.cluster-abcdabcdabcda.eu-west-1.rds.amazonaws.com"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"root"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Note that the secret manager costs <a href="https://aws.amazon.com/secrets-manager/pricing/">~40 cents per month</a> for managing this secret.
+We, however, need the password packaged as a secret in order to use the rds-data api later.
+You could also implement password rotation here if you like.</p>
+
+<h2 id="implement-custom-resources">Implement custom resources&nbsp;<a href="#implement-custom-resources" class="permalink" title="permalink"></a></h2>
+
+<p>This is the most interesting part.</p>
+
+<p>CloudFormation only sets up the initial database server but all further steps normally have to be done manually,
+but we can do better and create custom resources in CloudFormation to create databases and users using CloudFormation.</p>
+
+<h3 id="create-a-database-custom-resource">Create a database custom resource&nbsp;<a href="#create-a-database-custom-resource" class="permalink" title="permalink"></a></h3>
+
+<p>Let’s look at the <code class="highlighter-rouge">serverless.yml</code> of the consuming service first.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless.yml</span>
+<span class="na">Resources</span><span class="pi">:</span>
+  <span class="na">Database</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">Custom::Database</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">ServiceToken</span><span class="pi">:</span> <span class="kt">!ImportValue</span> <span class="s1">'</span><span class="s">shared-global-database-service-token'</span>
+      <span class="na">Name</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">AWS::StackName</span>
+</code></pre></div></div>
+
+<p>This is how I want to define additional database in different stacks.
+I just define how I want them to be named and that’s it.
+In this case, I just use the stack name itself.</p>
+
+<p>Custom resources always have a <code class="highlighter-rouge">ServiceToken</code> which is a reference to the lambda that handles them,
+so let’s implement that resource in the shared stack:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless-shares.yml</span>
+<span class="na">Transform</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">AWS::Serverless-2016-10-31</span> <span class="c1"># for inline lambda function</span>
+
+<span class="na">Resources</span><span class="pi">:</span>
+  <span class="na">DatabaseResourceLambda</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::Serverless::Function</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">Description</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">Provides</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">custom</span><span class="nv"> </span><span class="s">CloudFormation</span><span class="nv"> </span><span class="s">resource</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">create</span><span class="nv"> </span><span class="s">MySQL</span><span class="nv"> </span><span class="s">databases</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">${DatabaseServer}.'</span>
+      <span class="na">FunctionName</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">${AWS::StackName}-database-resource'</span>
+      <span class="na">Handler</span><span class="pi">:</span> <span class="s">index.handler</span>
+      <span class="na">Runtime</span><span class="pi">:</span> <span class="s">nodejs12.x</span>
+      <span class="na">Role</span><span class="pi">:</span> <span class="kt">!GetAtt</span> <span class="s">DatabaseAccessPolicy.Arn</span> <span class="c1"># attach role to access the database</span>
+      <span class="na">Environment</span><span class="pi">:</span>
+        <span class="na">Variables</span><span class="pi">:</span>
+          <span class="na">resourceArn</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">arn:${AWS::Partition}:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DatabaseServer}'</span>
+          <span class="na">secretArn</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseSecret</span>
+      <span class="na">InlineCode</span><span class="pi">:</span> <span class="pi">|-</span>
+        <span class="s">const RDSDataService = new (require('aws-sdk/clients/rdsdataservice'))({apiVersion: '2018-08-01'});</span>
+        <span class="s">const response = require('cfn-response');</span>
+        <span class="s">const {resourceArn, secretArn} = process.env;</span>
+
+        <span class="s">exports.handler = async function (event, context) {</span>
+            <span class="s">try {</span>
+                <span class="s">console.log(event);</span>
+                <span class="s">const name = event.ResourceProperties.Name;</span>
+
+                <span class="s">if (event.RequestType === 'Delete') {</span>
+                    <span class="s">const sql = 'DROP DATABASE IF EXISTS `' + name + '`';</span>
+                    <span class="s">await RDSDataService.executeStatement({resourceArn, secretArn, sql}).promise();</span>
+                    <span class="s">return await response.send(event, context, response.SUCCESS);</span>
+                <span class="s">}</span>
+
+                <span class="s">if (name !== event.PhysicalResourceId) {</span>
+                    <span class="s">const sql = 'CREATE DATABASE `' + name + '`';</span>
+                    <span class="s">await RDSDataService.executeStatement({resourceArn, secretArn, sql}).promise();</span>
+                <span class="s">}</span>
+
+                <span class="s">return await response.send(event, context, response.SUCCESS, {Server: resourceArn}, name);</span>
+            <span class="s">} catch (error) {</span>
+                <span class="s">if (/^Communications link failure/.test(error.message)) {</span>
+                    <span class="s">throw error; // let lambda reattempt this action if aurora is paused</span>
+                <span class="s">}</span>
+
+                <span class="s">console.error(error);</span>
+                <span class="s">return await response.send(event, context, response.FAILED);</span>
+            <span class="s">}</span>
+        <span class="s">};</span>
+  <span class="na">DatabaseAccessPolicy</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::IAM::Role</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">RoleName</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">${AWS::StackName}-${AWS::Region}-database-access-policy'</span>
+      <span class="na">AssumeRolePolicyDocument</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2012-10-17'</span><span class="pi">,</span> <span class="nv">Statement</span><span class="pi">:</span> <span class="pi">[{</span><span class="nv">Effect</span><span class="pi">:</span> <span class="nv">Allow</span><span class="pi">,</span> <span class="nv">Action</span><span class="pi">:</span> <span class="nv">sts</span><span class="pi">:</span><span class="nv">AssumeRole</span><span class="pi">,</span> <span class="nv">Principal</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Service</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">lambda.amazonaws.com</span><span class="pi">]}}]}</span>
+      <span class="na">Policies</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">PolicyName</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s2">"</span><span class="s">${AWS::StackName}-database-access"</span>
+          <span class="na">PolicyDocument</span><span class="pi">:</span>
+            <span class="na">Version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2012-10-17'</span>
+            <span class="na">Statement</span><span class="pi">:</span>
+              <span class="pi">-</span> <span class="pi">{</span><span class="nv">Effect</span><span class="pi">:</span> <span class="nv">Allow</span><span class="pi">,</span> <span class="nv">Action</span><span class="pi">:</span> <span class="nv">logs</span><span class="pi">:</span><span class="nv">CreateLog*</span><span class="pi">,</span> <span class="nv">Resource</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}*:*'</span><span class="pi">}</span>
+              <span class="pi">-</span> <span class="pi">{</span><span class="nv">Effect</span><span class="pi">:</span> <span class="nv">Allow</span><span class="pi">,</span> <span class="nv">Action</span><span class="pi">:</span> <span class="nv">logs</span><span class="pi">:</span><span class="nv">PutLogEvents</span><span class="pi">,</span> <span class="nv">Resource</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}*:*:*'</span><span class="pi">}</span>
+              <span class="pi">-</span> <span class="pi">{</span><span class="nv">Effect</span><span class="pi">:</span> <span class="nv">Allow</span><span class="pi">,</span> <span class="nv">Action</span><span class="pi">:</span> <span class="nv">rds-data</span><span class="pi">:</span><span class="nv">ExecuteStatement</span><span class="pi">,</span> <span class="nv">Resource</span><span class="pi">:</span> <span class="s1">'</span><span class="s">*'</span><span class="pi">}</span> <span class="c1"># this api does not support target resources</span>
+              <span class="pi">-</span> <span class="pi">{</span><span class="nv">Effect</span><span class="pi">:</span> <span class="nv">Allow</span><span class="pi">,</span> <span class="nv">Action</span><span class="pi">:</span> <span class="nv">secretsmanager</span><span class="pi">:</span><span class="nv">GetSecretValue</span><span class="pi">,</span> <span class="nv">Resource</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/${AWS::StackName}/database/*'</span><span class="pi">}</span>
+
+<span class="na">Outputs</span><span class="pi">:</span>
+  <span class="na">DatabaseServiceToken</span><span class="pi">:</span>
+    <span class="na">Description</span><span class="pi">:</span> <span class="s">Lambda function that can be used to create a database on a database server in CloudFormation</span>
+    <span class="na">Value</span><span class="pi">:</span> <span class="kt">!GetAtt</span> <span class="s">DatabaseResourceLambda.Arn</span>
+    <span class="na">Export</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Name</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">${AWS::StackName}-database-service-token'</span><span class="pi">}</span>
+</code></pre></div></div>
+
+<p>I define a lambda function purely in CloudFormation.
+I could use a serverless function, but I can’t declare their code inline.
+This function basically has to handle 3 scenarios:</p>
+
+<ul>
+  <li>Create: On which I execute a <code class="highlighter-rouge">CREATE DATABASE</code> statement.
+<code class="highlighter-rouge">event.PhysicalResourceId</code> will be undefined in that scenario so the statement is always executed.
+I return the database name as the <code class="highlighter-rouge">PhysicalResourceId</code> which allows you to use <code class="highlighter-rouge">!Ref</code> to get the name.</li>
+  <li>Update: Which is the same as Create, but I look at the <code class="highlighter-rouge">event.PhysicalResourceId</code>
+and only execute the statement if it does not match.</li>
+  <li>Delete: Which deletes the resource using <code class="highlighter-rouge">DROP DATABASE IF EXISTS</code>.
+This function is also called if the <code class="highlighter-rouge">PhysicalResourceId</code> changed in the “Update complete, cleanup in progress”
+stage you might have seen in CloudFormation at some point already.
+This is also why you don’t have to bother with the old database during Update.</li>
+</ul>
+
+<p>There are 2 more important things to note:</p>
+
+<ul>
+  <li>You always want you lambda to respond to resource create requests,
+which is why I wrap the entire function in a <code class="highlighter-rouge">try {} catch {}</code> block.
+If you don’t do that, you have to wait for CloudFormation to time out, which takes ~30 minutes.
+It’s also good practice to just log the event so if you are stuck, so you can manually respond using the ResponseURL in the event.</li>
+  <li>Aurora Serverless might be paused, and that is the one situation where I let the lambda fail in a controlled manner.
+The CloudFormation invoke will be handled like an event which means Lambda will retry the exectution after some time.
+If aurora is paused, I just fail and lambda will retry at which point the database is hopefully up and running.</li>
+</ul>
+
+<h3 id="create-a-user-custom-resource">Create a user custom resource&nbsp;<a href="#create-a-user-custom-resource" class="permalink" title="permalink"></a></h3>
+
+<p>Let’s, again, look at the usage first:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless.yml</span>
+<span class="na">Resource</span><span class="pi">:</span>
+  <span class="na">DatabaseUserSecret</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::SecretsManager::Secret</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">Name</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">/shared-global/database/${AWS::StackName}'</span>
+      <span class="na">GenerateSecretString</span><span class="pi">:</span>
+        <span class="na">SecretStringTemplate</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">{"username":</span><span class="nv"> </span><span class="s">"${AWS::StackName}"}'</span>
+        <span class="na">GenerateStringKey</span><span class="pi">:</span> <span class="s2">"</span><span class="s">password"</span>
+        <span class="na">ExcludeCharacters</span><span class="pi">:</span> <span class="s1">'</span><span class="s">"@/\'</span>
+  <span class="na">DatabaseUserSecretAttachment</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::SecretsManager::SecretTargetAttachment</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">SecretId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseUserSecret</span>
+      <span class="na">TargetId</span><span class="pi">:</span> <span class="kt">!ImportValue</span> <span class="s1">'</span><span class="s">shared-global-database-server'</span>
+      <span class="na">TargetType</span><span class="pi">:</span> <span class="s">AWS::RDS::DBCluster</span>
+  <span class="na">DatabaseUser</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">Custom::DatabaseUser</span>
+    <span class="na">DependsOn</span><span class="pi">:</span> <span class="s">DatabaseUserSecretAttachment</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">ServiceToken</span><span class="pi">:</span> <span class="kt">!ImportValue</span> <span class="s1">'</span><span class="s">shared-global-database-user-service-token'</span>
+      <span class="na">SecretId</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseUserSecret</span>
+      <span class="na">Privileges</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="pi">{</span><span class="nv">Permission</span><span class="pi">:</span> <span class="nv">ALL</span><span class="pi">,</span> <span class="nv">Database</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="nv">Database</span><span class="pi">,</span> <span class="nv">Table</span><span class="pi">:</span> <span class="s1">'</span><span class="s">*'</span><span class="pi">}</span>
+</code></pre></div></div>
+
+<p>Ok so there are multiple things going on here.</p>
+
+<ol>
+  <li>Create a secret for our new user, so we have a place to store the password.
+I use the stack name as a user name here. Note that the username im MySQL (5.7) is limited to 32 characters.</li>
+  <li>Attach the secret to the database which will fill in the rest of the properties,
+just like when we created the root secret.</li>
+  <li>Use the custom resource, that I’ll show you later, to create the user with the secret.
+I also define the users privileges, so I can limit the user to the database we defined earlier.
+Feel free to create even more restricted user but remeber that any secret in the SecretManager costs 40 cents per month.</li>
+</ol>
+
+<p>So now, let’s define the custom resource in the shared stack:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless-shares.yml</span>
+<span class="na">Transform</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">AWS::Serverless-2016-10-31</span> <span class="c1"># for inline lambda function</span>
+
+<span class="na">Resources</span><span class="pi">:</span>
+  <span class="na">DatabaseUserResourceLambda</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::Serverless::Function</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">Description</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">Provides</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">custom</span><span class="nv"> </span><span class="s">CloudFormation</span><span class="nv"> </span><span class="s">resource</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">create</span><span class="nv"> </span><span class="s">MySQL</span><span class="nv"> </span><span class="s">users</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">${DatabaseServer}.'</span>
+      <span class="na">FunctionName</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">${AWS::StackName}-database-user-resource'</span>
+      <span class="na">Handler</span><span class="pi">:</span> <span class="s">index.handler</span>
+      <span class="na">Runtime</span><span class="pi">:</span> <span class="s">nodejs12.x</span>
+      <span class="na">Role</span><span class="pi">:</span> <span class="kt">!GetAtt</span> <span class="s">DatabaseAccessPolicy.Arn</span> <span class="c1"># attach role to access the database</span>
+      <span class="na">Environment</span><span class="pi">:</span>
+        <span class="na">Variables</span><span class="pi">:</span>
+          <span class="na">resourceArn</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">arn:${AWS::Partition}:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DatabaseServer}'</span>
+          <span class="na">secretArn</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseSecret</span>
+      <span class="na">InlineCode</span><span class="pi">:</span> <span class="pi">|-</span>
+        <span class="s">const RDSDataService = new (require('aws-sdk/clients/rdsdataservice'))({apiVersion: '2018-08-01'});</span>
+        <span class="s">const SecretsManager = new (require('aws-sdk/clients/secretsmanager'))({apiVersion: '2017-10-17'});</span>
+        <span class="s">const response = require('cfn-response');</span>
+        <span class="s">const {resourceArn, secretArn} = process.env;</span>
+
+        <span class="s">exports.handler = async function (event, context) {</span>
+            <span class="s">try {</span>
+                <span class="s">console.log(event);</span>
+                <span class="s">const userSecretId = event.ResourceProperties.SecretId;</span>
+                <span class="s">const secret = await SecretsManager.getSecretValue({SecretId: userSecretId}).promise();</span>
+                <span class="s">const {username, password} = JSON.parse(secret.SecretString);</span>
+
+                <span class="s">if (event.RequestType === 'Delete') {</span>
+                    <span class="s">await executeStatement('DROP USER IF EXISTS :username', {username});</span>
+                    <span class="s">return await response.send(event, context, response.SUCCESS);</span>
+                <span class="s">}</span>
+
+                <span class="s">if (userSecretId !== event.PhysicalResourceId) {</span>
+                    <span class="s">await executeStatement('CREATE USER :username IDENTIFIED BY :password', {username, password});</span>
+                <span class="s">}</span>
+
+                <span class="s">await executeStatement('REVOKE ALL PRIVILEGES, GRANT OPTION FROM :username', {username});</span>
+                <span class="s">for (const {Permission, Database, Table} of event.ResourceProperties.Privileges) {</span>
+                    <span class="s">await executeStatement("GRANT " + Permission + " ON `" + Database + "`." + Table + " TO :username", {username});</span>
+                <span class="s">}</span>
+
+                <span class="s">return await response.send(event, context, response.SUCCESS, null, userSecretId);</span>
+            <span class="s">} catch (error) {</span>
+                <span class="s">if (/^Communications link failure/.test(error.message)) {</span>
+                    <span class="s">throw error; // let lambda reattempt this action if aurora is paused</span>
+                <span class="s">}</span>
+
+                <span class="s">console.error(error);</span>
+                <span class="s">return await response.send(event, context, response.FAILED);</span>
+            <span class="s">}</span>
+        <span class="s">};</span>
+
+        <span class="s">function executeStatement(sql, parameters) {</span>
+            <span class="s">parameters = Object.entries(parameters).map(([name, stringValue]) =&gt; ({name, value: {stringValue}}));</span>
+            <span class="s">return RDSDataService.executeStatement({resourceArn, secretArn, sql, parameters}).promise();</span>
+        <span class="s">}</span>
+
+<span class="na">Outputs</span><span class="pi">:</span>
+  <span class="na">DatabaseUserServiceToken</span><span class="pi">:</span>
+    <span class="na">Description</span><span class="pi">:</span> <span class="s">Lambda function that can be used to create a user on the database server in CloudFormation</span>
+    <span class="na">Value</span><span class="pi">:</span> <span class="kt">!GetAtt</span> <span class="s">DatabaseUserResourceLambda.Arn</span>
+    <span class="na">Export</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Name</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">${AWS::StackName}-database-user-service-token'</span><span class="pi">}</span>
+</code></pre></div></div>
+
+<p>This is similar to the <code class="highlighter-rouge">DatabaseResourceLambda</code> from earlier. It even reuses the same IAMRole.</p>
+
+<p>Let’s get through it.</p>
+
+<ul>
+  <li>Create: (where <code class="highlighter-rouge">event.PhysicalResourceId</code> is not defined) will create the user and then execute a <code class="highlighter-rouge">GRANT</code> per privilege.</li>
+  <li>Update: will create a new user when the secret has changed and then execute a <code class="highlighter-rouge">GRANT</code> per privilege.</li>
+  <li>Delete: Will simply drop the user if it exists.</li>
+</ul>
+
+<h3 id="bring-it-together">bring it together&nbsp;<a href="#bring-it-together" class="permalink" title="permalink"></a></h3>
+
+<p>So that is a lot of YAML so how can we use it all.</p>
+
+<p>Let me show with more pseudo-yaml™.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless.yml</span>
+<span class="na">provider</span><span class="pi">:</span>
+  <span class="c1"># [...]</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="c1"># the specifics differ depending on how you access the database</span>
+    <span class="na">DATABASE_RESOURCE</span><span class="pi">:</span> <span class="kt">!GetAtt</span> <span class="s">Database.Server</span>
+    <span class="na">DATABASE_SECRET</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">DatabaseUser</span>
+    <span class="na">DATABASE_NAME</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="s">Database</span>
+
+<span class="na">resources</span><span class="pi">:</span>
+  <span class="na">Resources</span><span class="pi">:</span>
+    <span class="na">Database</span><span class="pi">:</span> <span class="c1"># [...]</span>
+    <span class="na">DatabaseUser</span><span class="pi">:</span> <span class="c1"># [...]</span>
+</code></pre></div></div>
+
+<p>And that’s all you need in your service.
+Now you can deploy as many stages or services as you want, using the same database server.</p>
+
+<p>You now should idealy use the rds-data api to work with the database.
+But that’s not always an option,
+so you can also define the VPC subnets as output in the shared stack and import them into your services.</p>
+
+<p>But, If you can get some time, you should check if your database abstraction has an rds-data driver
+or, if not, how hard it would be to create one. I <a href="https://github.com/Nemo64/dbal-rds-data">created one for php myself</a>
+because not having to use a VPC in my main application (and a costly a NAT Gateway) is awesome.
+You don’t even have to deal with how to receive the Secret and you get free connection pool management too.</p>
+
+<h2 id="bonus-schedule-the-autopause-feature">Bonus: schedule the AutoPause feature&nbsp;<a href="#bonus-schedule-the-autopause-feature" class="permalink" title="permalink"></a></h2>
+
+<p>Aurora Serverless has an AutoPause feature which allows it to scale to 0 capacity when not used.
+There is a massive downside though: it takes up to around a minute to wake up again.
+This is unacceptable for production sites and very annoying during development as well,
+but an unpaused Aurora Serverless costs ~$50 a month so it is worth investigating some alternatives.</p>
+
+<p>What we can do is disabling AutoPause during work hours. Let’s check:</p>
+
+<p>1 capacity unit costs <a href="https://aws.amazon.com/rds/aurora/pricing/">$0,07 per hour</a> (in the eu, 1 cent cheaper in US)</p>
+<ul>
+  <li>24 hours/day ~ 7 days/week = $50,40 / 30 days</li>
+  <li>12 hours/day ~ 7 days/week = $25,20 / 30 days</li>
+  <li>10 hours/day ~ 5 days/week = $15,00 / 30 days ~ average</li>
+</ul>
+
+<p>You see, just running it for half a day is a lot cheaper
+and limiting it even further will bring it in throwing distance to the smallest RDS instances possible
+while still having the Multi-AZ failover and performance of an Aurora Database,
+and possibly swallowing the price of a NAT Gateway if you can use the rds-data api instead of TCP connections.</p>
+
+<p>Depending on what you are doing, it might even be fine for internal management tools that are only used during work hours.
+However, usually that’s not a good experience but cutting costs in half for development is still nice.</p>
+
+<p>Remember, the database is still available when paused, it’ll just take a minute to start
+so it’s not like you application will be inaccessable outside your work hours.</p>
+
+<p>And also, it’s Aurora Serverless. It can scale up automatically without you having to set up scaling rules.</p>
+
+<p>So how do we implement that? With a Lambda function in our shared CloudFormation template, of course.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># serverless-shared.yml</span>
+<span class="na">Transform</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">AWS::Serverless-2016-10-31</span> <span class="c1"># for inline lambda function</span>
+
+<span class="na">Resources</span><span class="pi">:</span>
+  <span class="na">DatabaseScalingSchedule</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::Serverless::Function</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">Description</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">Changes</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Scaling</span><span class="nv"> </span><span class="s">Configuration</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">database</span><span class="nv"> </span><span class="s">${DatabaseServer}.'</span>
+      <span class="na">FunctionName</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">${AWS::StackName}-database-scaling'</span>
+      <span class="na">Handler</span><span class="pi">:</span> <span class="s">index.handler</span>
+      <span class="na">Runtime</span><span class="pi">:</span> <span class="s">nodejs12.x</span>
+      <span class="na">Role</span><span class="pi">:</span> <span class="kt">!GetAtt</span> <span class="s">DatabaseAccessPolicy.Arn</span>
+      <span class="na">Environment</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Variables</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">SERVER</span><span class="pi">:</span> <span class="kt">!Ref</span> <span class="nv">DatabaseServer</span><span class="pi">}}</span>
+      <span class="na">Events</span><span class="pi">:</span>
+        <span class="na">Worktime</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Type</span><span class="pi">:</span> <span class="nv">Schedule</span><span class="pi">,</span> <span class="nv">Properties</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Schedule</span><span class="pi">:</span> <span class="s1">'</span><span class="s">cron(0</span><span class="nv"> </span><span class="s">7</span><span class="nv"> </span><span class="s">?</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">MON-FRI</span><span class="nv"> </span><span class="s">*)'</span><span class="pi">,</span> <span class="nv">Input</span><span class="pi">:</span> <span class="s1">'</span><span class="s">{"AutoPause":</span><span class="nv"> </span><span class="s">false,</span><span class="nv"> </span><span class="s">"MinCapacity":</span><span class="nv"> </span><span class="s">1,</span><span class="nv"> </span><span class="s">"MaxCapacity":</span><span class="nv"> </span><span class="s">4}'</span><span class="pi">}}</span>
+        <span class="na">Freetime</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Type</span><span class="pi">:</span> <span class="nv">Schedule</span><span class="pi">,</span> <span class="nv">Properties</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Schedule</span><span class="pi">:</span> <span class="s1">'</span><span class="s">cron(0</span><span class="nv"> </span><span class="s">17</span><span class="nv"> </span><span class="s">?</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">MON-FRI</span><span class="nv"> </span><span class="s">*)'</span><span class="pi">,</span> <span class="nv">Input</span><span class="pi">:</span> <span class="s1">'</span><span class="s">{"AutoPause":</span><span class="nv"> </span><span class="s">true,</span><span class="nv"> </span><span class="s">"MinCapacity":</span><span class="nv"> </span><span class="s">1,</span><span class="nv"> </span><span class="s">"MaxCapacity":</span><span class="nv"> </span><span class="s">2}'</span><span class="pi">}}</span>
+      <span class="na">InlineCode</span><span class="pi">:</span> <span class="pi">|-</span>
+        <span class="s">const RDS = new (require('aws-sdk/clients/rds'))({apiVersion: '2014-10-31'});</span>
+        <span class="s">exports.handler = async function (event) {</span>
+            <span class="s">return await RDS.modifyDBCluster({DBClusterIdentifier: process.env.SERVER, ScalingConfiguration: event}).promise();</span>
+        <span class="s">};</span>
+  <span class="na">DatabaseAccessPolicy</span><span class="pi">:</span>
+    <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::IAM::Role</span>
+    <span class="na">Properties</span><span class="pi">:</span>
+      <span class="na">RoleName</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">${AWS::StackName}-${AWS::Region}-database-access-policy'</span>
+      <span class="na">AssumeRolePolicyDocument</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2012-10-17'</span><span class="pi">,</span> <span class="nv">Statement</span><span class="pi">:</span> <span class="pi">[{</span><span class="nv">Effect</span><span class="pi">:</span> <span class="nv">Allow</span><span class="pi">,</span> <span class="nv">Action</span><span class="pi">:</span> <span class="nv">sts</span><span class="pi">:</span><span class="nv">AssumeRole</span><span class="pi">,</span> <span class="nv">Principal</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">Service</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">lambda.amazonaws.com</span><span class="pi">]}}]}</span>
+      <span class="na">Policies</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">PolicyName</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s2">"</span><span class="s">${AWS::StackName}-database-access"</span>
+          <span class="na">PolicyDocument</span><span class="pi">:</span>
+            <span class="na">Version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2012-10-17'</span>
+            <span class="na">Statement</span><span class="pi">:</span>
+              <span class="c1"># [...]</span>
+              <span class="pi">-</span> <span class="pi">{</span><span class="nv">Effect</span><span class="pi">:</span> <span class="nv">Allow</span><span class="pi">,</span> <span class="nv">Action</span><span class="pi">:</span> <span class="nv">rds</span><span class="pi">:</span><span class="nv">ModifyDBCluster</span><span class="pi">,</span> <span class="nv">Resource</span><span class="pi">:</span> <span class="kt">!Sub</span> <span class="s1">'</span><span class="s">arn:${AWS::Partition}:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DatabaseServer}'</span><span class="pi">}</span>
+</code></pre></div></div>
+
+<p>Quiet a lot shorter than the lambda functions from earlier, but this one does not require error handling.
+I reuse the role from before, but I need to allow the ModifyDBCluster call.</p>
+
+<p>I just basically pass the event object as <code class="highlighter-rouge">ScalingConfiguration</code> to <code class="highlighter-rouge">modifyDBCluster</code>.
+Then I can just define scheduled events that pass my desired configuration at the desired times.</p>
+
+<h2 id="working-example">Working example&nbsp;<a href="#working-example" class="permalink" title="permalink"></a></h2>
+
+<p>I build a demo project that has shows a symfon/PHP project running with this database setup.</p>
+
+<p>Even if you don’t use PHP or Serverless, it might be worth a look to see or even try a working example.</p>
+
+<p>See it here: <a href="https://github.com/Nemo64/serverless-symfony">github.com/Nemo64/serverless-symfony</a></p>
+
+<h2 id="changes">Changes&nbsp;<a href="#changes" class="permalink" title="permalink"></a></h2>
+
+<ul>
+  <li>2020-09-17: I removed the canned password rotation since it requires a VpcEndpoint that costs extra.
+            I don’t want to increase the size of this post so I decided to remove it rather than to extend it.</li>
+</ul>
+
+    </div>
+
+    <aside class="page-content">
+        <div hidden typeof="Organization" property="publisher">
+            <meta property="name" content="Marco Zone">
+            <div property="logo" typeof="ImageObject">
+                <meta property="url" content="https://www.marco.zone/assets/marco-zone-text.png">
+                <meta property="width" content="378">
+                <meta property="height" content="60">
+            </div>
+        </div>
+
+        <figure class="post__similar">
+            
+            
+            
+            <h2>Similar "AWS" posts</h2>
+            <ul>
+                
+                <li><a href="/configure-symfony-for-serverless-lambda">Configure symfony for a serverless lambda environment in bref</a></li>
+                
+                <li><a href="/asset-distribution-on-a-aws-serverless-multipage-application">Static resource distribution on a aws serverless multipage application</a></li>
+                
+            </ul>
+            
+            
+            
+            
+            <h2>Similar "serverless" posts</h2>
+            <ul>
+                
+                <li><a href="/configure-symfony-for-serverless-lambda">Configure symfony for a serverless lambda environment in bref</a></li>
+                
+                <li><a href="/asset-distribution-on-a-aws-serverless-multipage-application">Static resource distribution on a aws serverless multipage application</a></li>
+                
+            </ul>
+            
+            
+            
+            
+            <h2>Similar "MySQL" posts</h2>
+            <ul>
+                
+                <li><a href="/doctrine-event-guide">Guide to doctrine orm events</a></li>
+                
+            </ul>
+            
+            
+            
+            
+            <h2>Similar "Software-Development" posts</h2>
+            <ul>
+                
+                <li><a href="/doctrine-event-guide">Guide to doctrine orm events</a></li>
+                
+                <li><a href="/official-docker-php-apache-https">Configure https for the official docker php apache images</a></li>
+                
+                <li><a href="/configure-symfony-for-serverless-lambda">Configure symfony for a serverless lambda environment in bref</a></li>
+                
+                <li><a href="/docker-uses-over-100-percent-cpu">Docker for mac uses over 100% cpu while doing nothing</a></li>
+                
+                <li><a href="/typo3-und-webpack">Webpack in TYPO3 integrieren</a></li>
+                
+            </ul>
+            
+            
+        </figure>
+
+        
+        <figure class="post__author" id="author">
+            <h2>Author:</h2>
+            <div class="author" property="author" typeof="Person">
+                <div class="author__meta">
+                    <div class="author__image">
+                        <amp-img srcset="/assets/person/marco-desaturate.jpg 160w" width="160" height="160" layout="responsive" sizes="5rem"></amp-img><noscript><img src="/assets/person/marco-desaturate.jpg" alt="" property="image" ></noscript>
+                    </div>
+                    <div class="author__body">
+                        <h3 class="author__name" property="name">Marco Pfeiffer</h3>
+                        <div><a href="https://twitter.com/TheTrueNemo">@TheTrueNemo</a></div>
+                        <div><a href="https://github.com/Nemo64">github.com/Nemo64</a></div>
+                        <div>working for <a href="https://www.hauptsache.net/">hauptsache.net</a></div>
+                    </div>
+                </div>
+            </div>
+        </figure>
+    </aside>
+
+</main>
+
+
+
+<footer id="page-footer" class="page-footer">
+    <div class="page-footer__copyright">
+        <span>© 2016 – 2022</span>
+        <span>Marco Pfeiffer</span>
+    </div>
+    <ul class="page-footer__nav">
+        
+        <li><a href="/datenschutzerklaerung" rel="nofollow">Datenschutzerklärung</a></li>
+        <li><a href="/impressum" rel="nofollow">Impressum</a></li>
+        
+    </ul>
+</footer>
+
+</body>
+</html>
