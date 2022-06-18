@@ -79,10 +79,10 @@ export default function Index({ feed }: { feed: FeedItem[] }): JSX.Element {
                         <div className="rounded-xl bg-slate-400/20 absolute inset-0" />
                       )}
                     </div>
-                    <h3 className="self-center text-xl font-extralight">
+                    <h3 className="self-center text-xl font-light">
                       {item.name}
                     </h3>
-                    <p className="col-span-2 sm:col-span-1 font-extralight">
+                    <p className="col-span-2 sm:col-span-1 font-light">
                       {item.description}
                     </p>
                     <ul className="col-span-2 sm:col-span-1 text-sm font-light flex flex-wrap items-baseline gap-1">
