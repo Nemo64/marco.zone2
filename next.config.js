@@ -14,7 +14,12 @@ const rewrites = globby(join(__dirname, "public/old/*.html")).then((files) =>
 module.exports = (phase) => ({
   reactStrictMode: true,
   images: {
-    domains: ["cdn-images-1.medium.com", "clip.marco.zone", "www.marco.zone"],
+    domains: [
+      "cdn-images-1.medium.com",
+      "clip.marco.zone",
+      "pbs.twimg.com",
+      "www.marco.zone",
+    ],
     imageSizes: [128, 256, 384],
     deviceSizes: [768, 1080],
   },
