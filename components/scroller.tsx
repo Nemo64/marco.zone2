@@ -19,7 +19,9 @@ export function Scroller({
         className="absolute z-10 left-0 top-0 bottom-0 p-4 text-left w-16 md:w-32 bg-gradient-to-r from-white via-white text-4xl dark:from-neutral-800 dark:via-neutral-800"
         onClick={() => {
           ref.current?.scrollBy({
-            left: ref.current.clientWidth * -0.3,
+            left:
+              (ref.current.firstElementChild?.clientWidth ??
+                ref.current.clientWidth) * -1,
             behavior: "smooth",
           });
         }}
@@ -40,7 +42,9 @@ export function Scroller({
         className="absolute z-10 right-0 top-0 bottom-0 p-4 text-right w-16 md:w-32 bg-gradient-to-l from-white via-white text-4xl dark:from-neutral-800 dark:via-neutral-800"
         onClick={() => {
           ref.current?.scrollBy({
-            left: ref.current.clientWidth * 0.3,
+            left:
+              ref.current.firstElementChild?.clientWidth ??
+              ref.current.clientWidth,
             behavior: "smooth",
           });
         }}
