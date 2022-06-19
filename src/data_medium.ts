@@ -14,10 +14,11 @@ export const loadMedium: FeedLoader = async () => {
     const result: Article = {
       "@type": "TechArticle",
       url: item.link ?? "https://medium.marco.zone/",
-      name: item.title ?? "[Title missing]",
+      headline: item.title ?? "[Title missing]",
       description: htmlContent
         .match(/<(p|h4)>(?!=)(.*?)<\/\1>/)[2]
-        .replace(/<[^>]+>|\s{2,}/g, " "),
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s{2,}/g, " "),
       datePublished: item.isoDate ?? new Date().toISOString(),
       image: htmlContent.match(/<img[^>]+src="([^"]+)"/)?.[1],
       // keywords: item.categories ?? [],

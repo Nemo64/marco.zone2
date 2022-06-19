@@ -1,7 +1,7 @@
-import { Article, WebApplication } from "schema-dts";
+import { CreativeWork } from "schema-dts";
 
-export type FeedItem = (Article | WebApplication) & {
-  name: string;
+export type FeedItem = CreativeWork & {
+  headline: string;
   image?: string;
   url: string;
   inLanguage?: string;

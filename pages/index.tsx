@@ -45,11 +45,11 @@ export default function Index({ feed }: { feed: FeedItem[] }): JSX.Element {
       </Head>
 
       <main className="mx-auto max-w-screen-sm">
-        {feedByYear.map(([year, feed]) => (
+        {feedByYear.map(([year, feed], yearIndex) => (
           <Fragment key={year}>
-            <h2 className="mt-12 p-2">{year}</h2>
+            <h2 className="mt-12 mb-2 px-2">{year}</h2>
             <ul className="mb-12" role="list">
-              {feed.map((item, index) => (
+              {feed.map((item, feedIndex) => (
                 <li key={item.url}>
                   <a
                     href={item.url.replace("https://www.marco.zone/", "/")}
@@ -60,7 +60,7 @@ export default function Index({ feed }: { feed: FeedItem[] }): JSX.Element {
                       "hover:bg-slate-400/20 motion-safe:md:hover:scale-105 hover:z-10 transition":
                         true,
                       "my-4 md:-mx-2 shadow-lg":
-                        item["@type"] === "WebApplication",
+                        !item["@type"].endsWith("Article"),
                     })}
                   >
                     <div className="self-center sm:self-start sm:row-span-3 w-16 h-16 sm:w-32 sm:h-32 relative">
@@ -73,28 +73,32 @@ export default function Index({ feed }: { feed: FeedItem[] }): JSX.Element {
                           layout="fill"
                           objectFit="cover"
                           objectPosition="center"
-                          priority={index < 5}
+                          priority={yearIndex === 0 && feedIndex < 5}
                         />
                       ) : (
                         <div className="rounded-xl bg-slate-400/20 absolute inset-0" />
                       )}
                     </div>
-                    <h3 className="self-center text-xl font-light">
-                      {item.name}
+                    <h3 className="-my-1 self-center text-xl font-light leading-snug">
+                      {item.headline}
                     </h3>
-                    <p className="col-span-2 sm:col-span-1 font-light">
-                      {item.description}
-                    </p>
+                    <div className="col-span-2 sm:col-span-1 font-light flex flex-col gap-2 whitespace-pre-wrap">
+                      {item.description.split(/\n{2,}/g).map((paragraph, i) => (
+                        <p key={i} className={i > 0 ? "opacity-60" : undefined}>
+                          {paragraph.trim()}
+                        </p>
+                      ))}
+                    </div>
                     <ul className="col-span-2 sm:col-span-1 text-sm font-light flex flex-wrap items-baseline gap-1">
                       <li
                         className={classNames({
                           "px-2 rounded-full bg-slate-400/20":
-                            item["@type"] === "TechArticle",
+                            item["@type"].endsWith("Article"),
                           "px-2 rounded-full bg-red-400/20":
-                            item["@type"] === "WebApplication",
+                            !item["@type"].endsWith("Article"),
                         })}
                       >
-                        {item["@type"]}
+                        {item["@type"].replace(/([A-Z])/g, " $1")}
                       </li>
                       <li className="px-2 rounded-full bg-slate-400/20">
                         {item.url?.match(/https?:\/\/(?:www\.)?([^\/]+)/)?.[1]}
