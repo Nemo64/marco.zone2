@@ -65,7 +65,7 @@ export function Tweet({
       <div className="flex flex-row gap-2 text-gray-400 justify-end">
         {dateFormatter.format(new Date(tweet.datePublished))}
         <Image
-          src={require("../public/assets/logos/Twitter logo blue.svg")}
+          src={require("../public/assets/logos/twitter-logo-blue.svg")}
           alt="Twitter"
           layout="fixed"
           width={20}

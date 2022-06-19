@@ -54,7 +54,7 @@ export const getStaticProps: GetStaticProps = async () => {
     .sort((a, b) => Date.parse(b.datePublished) - Date.parse(a.datePublished));
 
   return {
-    revalidate: 10 * 60, // 10 minutes
+    revalidate: 60, // 1 minute
     props: { feed },
   };
 };
@@ -141,7 +141,7 @@ function SocialSlider({ items }: { items: FeedItem[] }) {
 function Article({ item, priority }: { item: FeedItem; priority: boolean }) {
   return (
     <Link
-      href={item.url.replace("https://www.marco.zone/", "/")}
+      href={item.url.replace(`${process.env.NEXT_PUBLIC_URL}/`, "/")}
       lang={item.inLanguage}
       className={classNames({
         "grid grid-cols-[auto_1fr] grid-rows-[auto_auto_1fr] gap-2 p-2 sm:rounded-2xl":
