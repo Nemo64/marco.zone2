@@ -125,7 +125,7 @@ function SocialSlider({ items }: { items: FeedItem[] }) {
       {items.map((item) => (
         <li
           key={item.url}
-          className={`w-96 max-w-full max-h-64 overflow-hidden p-4 snap-center break-words shrink-0 text-sm`}
+          className={`w-[24rem] max-w-full max-h-64 overflow-hidden p-4 snap-center break-words shrink-0 text-sm`}
         >
           {"tweetEntities" in item ? (
             <Tweet tweet={item} sizes={width[96]} />
