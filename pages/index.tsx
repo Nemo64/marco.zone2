@@ -8,8 +8,7 @@ import { loadMedium } from "../src/data_medium";
 import { loadOldPosts } from "../src/data_old_posts";
 import { loadProjects } from "../src/data_projects";
 import { groupBy } from "lodash-es";
-import { Fragment } from "react";
-import { loadTweets } from "../src/data_twitter";
+import { loadTweets, TwitterFeedItem } from "../src/data_twitter";
 import { fallback } from "../src/util";
 import { Tweet } from "../components/tweet";
 import { Scroller } from "../components/scroller";
@@ -22,34 +21,24 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
 });
 
 export const getStaticProps: GetStaticProps = async () => {
-  const mediumPromise = loadMedium().catch(fallback([]));
-  const oldPostPromise = loadOldPosts().catch(fallback([]));
-  const projectPromise = loadProjects().catch(fallback([]));
-
-  // collect a list of links to relevant posts so they can be filtered
-  const blockedLinksPromise = Promise.all([
-    mediumPromise,
-    oldPostPromise,
-    projectPromise,
-  ]).then((items) => {
-    return items.flatMap((feed) => {
-      return feed.map((item) => {
-        return item.url.replace(/[?#].*$/, "");
+  const medium = loadMedium().catch(fallback([]));
+  const oldPosts = loadOldPosts().catch(fallback([]));
+  const selfPromotingLinks = Promise.all([medium, oldPosts]).then(
+    (feeds) => new Set(feeds.flat().map((item) => item.url))
+  );
+  const projects = loadProjects().catch(fallback([]));
+  const tweets = loadTweets()
+    .catch(fallback([]))
+    .then(async (tweets) => {
+      const links = await selfPromotingLinks;
+      return tweets.filter(({ tweetEntities }) => {
+        return !tweetEntities.urls?.find(({ expanded_url }) => {
+          return links.has(expanded_url);
+        });
       });
     });
-  });
 
-  // load tweets but hide tweets about blog posts
-  const tweetPromise = loadTweets({ blockedLinksPromise }).catch(fallback([]));
-
-  const feed = (
-    await Promise.all([
-      mediumPromise,
-      oldPostPromise,
-      projectPromise,
-      tweetPromise,
-    ])
-  )
+  const feed = (await Promise.all([medium, oldPosts, projects, tweets]))
     .flat()
     .sort((a, b) => Date.parse(b.datePublished) - Date.parse(a.datePublished));
 
@@ -74,31 +63,21 @@ export default function Index({ feed }: { feed: FeedItem[] }): JSX.Element {
         />
       </Head>
 
-      <main>
-        {feedByYear.map(([year, feed], index) => (
-          <Year feed={feed} year={year} key={year} index={index} />
-        ))}
-      </main>
+      {feedByYear.map(([year, feed], index) => (
+        <Year key={year} year={year} feed={feed} index={index} />
+      ))}
     </>
   );
 }
 
-function Year({
-  feed,
-  year,
-  index,
-}: {
-  feed: FeedItem[];
-  year: string;
-  index: number;
-}) {
+function Year({ year = "[year]", feed = [] as FeedItem[], index = 0 }) {
   const { articles, social } = groupBy(feed, (item) =>
     item["@type"] === "SocialMediaPosting" ? "social" : "articles"
   );
   return (
     <>
       <h2 className="mt-12 mb-2 px-2 mx-auto max-w-screen-sm">{year}</h2>
-      <ul className="mb-12" role="list">
+      <ul className="mb-12">
         {articles?.slice(0, 3).map((item) => (
           <li key={item.url} className="mx-auto max-w-screen-sm">
             <Article item={item} priority={index === 0} />
@@ -119,7 +98,7 @@ function Year({
   );
 }
 
-function SocialSlider({ items }: { items: FeedItem[] }) {
+function SocialSlider({ items = [] as FeedItem[] }) {
   return (
     <Scroller listClassName="px-[max(calc(50%-12rem),4rem)]">
       {items.map((item) => (
@@ -128,7 +107,7 @@ function SocialSlider({ items }: { items: FeedItem[] }) {
           className={`w-[24rem] max-w-full max-h-64 overflow-hidden p-4 snap-center break-words shrink-0 text-sm`}
         >
           {"tweetEntities" in item ? (
-            <Tweet tweet={item} sizes={width[96]} />
+            <Tweet tweet={item as TwitterFeedItem} sizes={width[96]} />
           ) : (
             <p>{item.description}</p>
           )}
@@ -138,7 +117,7 @@ function SocialSlider({ items }: { items: FeedItem[] }) {
   );
 }
 
-function Article({ item, priority }: { item: FeedItem; priority: boolean }) {
+function Article({ item = {} as FeedItem, priority = false }) {
   return (
     <Link
       href={item.url.replace(`${process.env.NEXT_PUBLIC_URL}/`, "/")}
@@ -151,22 +130,20 @@ function Article({ item, priority }: { item: FeedItem; priority: boolean }) {
         "my-4 shadow-lg": item["@type"].endsWith("Application"),
       })}
     >
-      <div className="self-center sm:self-start sm:row-span-3 w-16 h-16 sm:w-32 sm:h-32 relative">
-        {item.image ? (
-          <Image
-            src={item.image}
-            alt=""
-            className="rounded-xl"
-            sizes={`(min-width: ${screens.sm}) ${width[48 /* 32 * 1.5 */]}, ${width[24 /* 16 * 1.5 */]}`}
-            layout="fill"
-            objectFit="cover"
-            objectPosition="center"
-            priority={priority}
-          />
-        ) : (
-          <div className="rounded-xl bg-slate-400/20 absolute inset-0" />
-        )}
-      </div>
+      {item.image ? (
+        <Image
+          src={item.image}
+          alt=""
+          layout="raw"
+          className="rounded-xl self-center sm:self-start sm:row-span-3 w-16 h-16 sm:w-32 sm:h-32 object-cover"
+          sizes={`(min-width: ${screens.sm}) ${width[48 /* 32 * 1.5 */]}, ${width[24 /* 16 * 1.5 */]}`}
+          width={parseFloat(width[48]) * 16}
+          height={parseFloat(width[48]) * 16}
+          priority={priority}
+        />
+      ) : (
+        <div className="rounded-xl self-center sm:self-start sm:row-span-3 w-16 h-16 sm:w-32 sm:h-32 bg-slate-400/20" />
+      )}
       <h3 className="-my-1 self-center text-xl font-light leading-snug">
         {item.headline}
       </h3>

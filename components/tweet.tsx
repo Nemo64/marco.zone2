@@ -22,11 +22,16 @@ export function Tweet({
 
   let position = 0;
   for (const url of tweet.tweetEntities?.urls ?? []) {
-    parts.push(
-      <Link key={parts.length} href={tweet.url}>
-        {String(tweet.description).slice(position, url.start - position)}
-      </Link>
-    );
+    const part = tweet.description.slice(position, url.start);
+    if (part.length <= 5) {
+      parts.push(<Fragment key={parts.length}>{part}</Fragment>);
+    } else {
+      parts.push(
+        <Link key={parts.length} href={tweet.url}>
+          {part}
+        </Link>
+      );
+    }
 
     if (url.media_key && tweet.tweetMedia[url.media_key]) {
       const item = tweet.tweetMedia[url.media_key];
@@ -46,33 +51,38 @@ export function Tweet({
     position = url.end;
   }
 
-  if (position < tweet.description.length - 1) {
-    parts.push(
-      <Link key={parts.length} href={tweet.url}>
-        {String(tweet.description).slice(position)}
-      </Link>
-    );
+  if (position + 1 < tweet.description.length) {
+    const part = tweet.description.slice(position);
+    if (part.length <= 5) {
+      parts.push(<Fragment key={parts.length}>{part}</Fragment>);
+    } else {
+      parts.push(
+        <Link key={parts.length} href={tweet.url}>
+          {part}
+        </Link>
+      );
+    }
   }
 
   return (
-    <div className="h-full grid grid-rows[auto_1fr_auto] grid-cols-2 gap-2">
-      <Link
-        href={tweet.url.match(/https:\/\/[^/]*twitter\.com\/[^/]+/)?.[0]}
-        className="justify-self-start text-gray-400"
-      >
-        @{tweet.url.match(/twitter\.com\/([^/]+)/)?.[1]}
-      </Link>
-      <div className="flex flex-row gap-2 text-gray-400 justify-end">
-        {dateFormatter.format(new Date(tweet.datePublished))}
-        <Image
-          src={require("../public/assets/logos/twitter-logo-blue.svg")}
-          alt="Twitter"
-          layout="fixed"
-          width={20}
-          height={20}
-        />
+    <div className="h-full grid grid-rows-[auto_1fr_auto] grid-cols-[1fr_auto] gap-2">
+      <div className="flex flex-wrap gap-x-2 text-gray-400 justify-between">
+        <Link href={tweet.url.match(/https:\/\/[^/]*twitter\.com\/[^/]+/)?.[0]}>
+          @{tweet.url.match(/twitter\.com\/([^/]+)/)?.[1]}
+        </Link>
+        <time dateTime={tweet.datePublished}>
+          {dateFormatter.format(new Date(tweet.datePublished))}
+        </time>
       </div>
-      <div className="col-span-2 whitespace-pre-wrap">{parts}</div>
+      <Image
+        src={require("../public/assets/logos/twitter-logo-blue.svg")}
+        alt=""
+        layout="raw"
+        className="self-center"
+        width={20}
+        height={20}
+      />
+      <p className="col-span-2 whitespace-pre-wrap">{parts}</p>
       <ul className="col-span-2 flex flex-wrap items-center">
         {media.map(({ item, url }, index) => (
           <li
@@ -87,13 +97,11 @@ export function Tweet({
               <Image
                 key={media.length}
                 src={"url" in item ? item.url : item.preview_image_url}
-                // width={item.width}
-                // height={item.height}
+                width={item.width}
+                height={item.height}
                 sizes={sizes}
-                layout="fill"
-                className="rounded-xl"
-                objectFit="cover"
-                objectPosition="center"
+                layout="raw"
+                className="rounded-xl object-cover w-full h-full"
               />
             </Link>
           </li>

@@ -12,7 +12,7 @@ export async function loadMedium(): Promise<FeedItem[]> {
 
     return {
       "@type": "TechArticle",
-      url: item.link ?? "https://medium.marco.zone/",
+      url: item.link?.replace(/\?.*$/, "") ?? "https://medium.marco.zone/",
       headline: item.title ?? "[Title missing]",
       description: htmlContent
         .match(/<(p|h4)>(?!=)(.*?)<\/\1>/)[2]

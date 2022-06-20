@@ -56,9 +56,7 @@ export type TwitterFeedItem = FeedItem & {
   tweetMedia: Record<string, TweetMedia>;
 };
 
-export async function loadTweets({
-  blockedLinksPromise = Promise.resolve([] as string[]),
-}): Promise<TwitterFeedItem[]> {
+export async function loadTweets(): Promise<TwitterFeedItem[]> {
   if (!process.env.TWITTER_BEARER_TOKEN) {
     throw new Error("Environment variable TWITTER_BEARER_TOKEN is missing");
   }
@@ -84,16 +82,12 @@ export async function loadTweets({
     data: Tweet[];
     includes: { media: TweetMedia[] };
   };
-  const blockedLinks = new Set(await blockedLinksPromise);
 
   return timeline.data
     .filter(
       (tweet) =>
         tweet.lang === "en" &&
         !tweet.possibly_sensitive &&
-        !tweet.entities?.urls?.find((url) =>
-          blockedLinks.has(url.expanded_url)
-        ) &&
         (tweet.public_metrics.like_count >= 1 ||
           tweet.public_metrics.retweet_count >= 1)
     )

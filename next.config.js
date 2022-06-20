@@ -13,6 +13,11 @@ const rewrites = globby(join(__dirname, "public/old/*.html")).then((files) =>
 /** @type {(phase: string) => import('next').NextConfig} */
 module.exports = (phase) => ({
   reactStrictMode: true,
+  experimental: {
+    images: {
+      layoutRaw: true,
+    },
+  },
   images: {
     domains: [
       "cdn-images-1.medium.com",

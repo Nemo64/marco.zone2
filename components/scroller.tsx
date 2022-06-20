@@ -42,7 +42,7 @@ export function Scroller({
 
     const { clientWidth } = ref.current;
     const itemWidth = ref.current.firstElementChild?.clientWidth ?? clientWidth;
-    const targetIndex = Math.floor(Math.random() * (itemCount - 2)) + 1;
+    const targetIndex = Math.floor(Math.random() ** 2 * (itemCount - 2)) + 1;
 
     ref.current.scrollTo({
       left: targetIndex * itemWidth,
@@ -56,13 +56,15 @@ export function Scroller({
         type="button"
         className="absolute z-10 left-0 top-0 bottom-0 p-4 text-left w-16 md:w-32 bg-gradient-to-r from-white via-white text-4xl dark:from-neutral-800 dark:via-neutral-800"
         onClick={prev}
+        tabIndex={-1}
+        aria-hidden={true}
       >
         ‹
       </button>
       <ul
         ref={ref}
         className={classNames(
-          "flex overflow-auto snap-x scrollbar-thin scrollbar-thumb-gray-400",
+          "flex overflow-auto snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-400",
           listClassName
         )}
       >
@@ -72,6 +74,8 @@ export function Scroller({
         type="button"
         className="absolute z-10 right-0 top-0 bottom-0 p-4 text-right w-16 md:w-32 bg-gradient-to-l from-white via-white text-4xl dark:from-neutral-800 dark:via-neutral-800"
         onClick={next}
+        tabIndex={-1}
+        aria-hidden={true}
       >
         ›
       </button>
