@@ -123,11 +123,13 @@ function Article({ item = {} as FeedItem, priority = false }) {
       href={item.url.replace(`${process.env.NEXT_PUBLIC_URL}/`, "/")}
       lang={item.inLanguage}
       className={classNames({
-        "grid grid-cols-[auto_1fr] grid-rows-[auto_auto_1fr] gap-2 p-2 sm:rounded-2xl":
+        "grid grid-cols-[auto_1fr] grid-rows-[auto_auto_1fr] gap-2 p-2 sm:rounded-2xl relative":
           true,
-        "hover:bg-slate-400/20 motion-safe:md:hover:scale-105 hover:z-10 transition":
+        "hover:bg-slate-200 hover:dark:bg-gray-600 motion-safe:md:hover:scale-105 hover:z-10 hover:shadow transition":
           true,
-        "my-4 shadow-lg": item["@type"].endsWith("Application"),
+        "my-4 shadow":
+          item["@type"].startsWith("Software") ||
+          item["@type"].endsWith("Application"),
       })}
     >
       {item.image ? (
