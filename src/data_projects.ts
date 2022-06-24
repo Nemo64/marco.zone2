@@ -53,4 +53,12 @@ export const loadProjects: FeedLoader = async () => [
       "It is technically my most successful project to date but it's also less than 10 lines of codes. " +
       "Such is fait.",
   },
+  {
+    "@type": "SoftwareSourceCode",
+    headline: "",
+    url: "https://github.com/Nemo64/dbal-rds-data",
+    datePublished: "2020-02-29T22:16:36Z",
+    description:
+      "A driver to use the aws aurora serverless rds data api in the doctrine database abstraction layer.",
+  },
 ];
