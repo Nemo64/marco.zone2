@@ -35,14 +35,17 @@ export function Scroller({
   }
 
   useEffect(function scrollToRandomItem() {
+    const { clientWidth } = ref.current;
     const itemCount = ref.current.children.length;
-    if (itemCount < 2) {
+    const itemWidth = ref.current.firstElementChild?.clientWidth ?? clientWidth;
+    const targetIndex = Math.min(
+      Math.floor((clientWidth / itemWidth - 1) / 2),
+      itemCount - 2
+    );
+
+    if (targetIndex < 1) {
       return;
     }
-
-    const { clientWidth } = ref.current;
-    const itemWidth = ref.current.firstElementChild?.clientWidth ?? clientWidth;
-    const targetIndex = Math.floor(Math.random() ** 2 * (itemCount - 2)) + 1;
 
     ref.current.scrollTo({
       left: targetIndex * itemWidth,
