@@ -9,7 +9,7 @@ export const screens: {
   md: string;
   lg: string;
   xl: string;
-} = config.theme.screens as any;
+} = config.theme?.screens as any;
 
 export const width: {
   "0": string;
@@ -79,4 +79,4 @@ export const width: {
   min: string;
   max: string;
   fit: string;
-} = config.theme.width as any;
+} = config.theme?.width as any;
